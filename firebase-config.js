@@ -1,7 +1,6 @@
 // !!! INCOLLA QUI LA TUA CONFIGURAZIONE DA FIREBASE !!!
 // Questo file non verrà tracciato da Git (grazie a .gitignore)
 
-import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: "AIzaSyBWFtdnFZ98qYWRV4QEfvapSlzDktrzNUk",
   authDomain: "gestionale-2b7b4.firebaseapp.com",
@@ -11,6 +10,3 @@ const firebaseConfig = {
   appId: "1:468705284783:web:5058b242b3127f000a7a5a"
 };
 
-// Initialize Firebase
-
-const app = initializeApp(firebaseConfig);

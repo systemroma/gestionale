@@ -176,10 +176,7 @@
         </div>
     </div>
 
-    <!-- CARICA LA CONFIGURAZIONE PRIMA DELLO SCRIPT PRINCIPALE -->
-    <!-- Questo file DEVE contenere: const firebaseConfig = { ... }; -->
-    <!-- Questo file è ignorato da Git (vedi .gitignore) -->
-    <script src="firebase-config.js"></script>
+    <!-- Il <script src="firebase-config.js"></script> è stato RIMOSSO -->
 
     <!-- Script per Firebase e logica dell'app -->
     <script type="module">
@@ -203,11 +200,32 @@
 
       // --- Variabili Globali ---
       
-      // La variabile `firebaseConfig` è caricata da `firebase-config.js`
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // !! INCOLLA QUI LA TUA CONFIGURAZIONE DA FIREBASE !!
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // (La trovi nelle Impostazioni Progetto -> Le tue app -> Icona </>)
+      //
+      // ATTENZIONE ALLA SICUREZZA:
+      // Ora che la configurazione è di nuovo in questo file,
+      // NON AGGIUNGERE QUESTO FILE a un repository Git pubblico,
+      // altrimenti le tue chiavi segrete saranno esposte.
+      // Se usi Git, aggiungi il nome di questo file (es. "index.html") 
+      // al tuo file .gitignore
+      //
+      const firebaseConfig = {
+        apiKey: "AIza...",
+        authDomain: "tuo-progetto.firebaseapp.com",
+        projectId: "tuo-progetto",
+        storageBucket: "tuo-progetto.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:..."
+      };
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       
-      // Controllo per assicurarsi che il file sia stato caricato
-      if (typeof firebaseConfig === 'undefined') {
-        const errorMsg = "ERRORE: `firebaseConfig` non trovato. Assicurati che `firebase-config.js` sia presente e contenga la configurazione.";
+      
+      // Controllo per assicurarsi che la config sia stata incollata
+      if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === "AIza...") {
+        const errorMsg = "ERRORE: `firebaseConfig` non è stata incollata. Apri il file .html (o index.html), scorri fino in fondo allo script e sostituisci il segnaposto con la tua vera configurazione Firebase.";
         console.error(errorMsg);
         document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
         throw new Error(errorMsg);

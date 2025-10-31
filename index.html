@@ -183,7 +183,7 @@
 
     <!-- Script per Firebase e logica dell'app -->
     <script type="module">
-      // Import necessari da Firebase (MODIFICATI per Cloud Firestore)
+      // Import necessari da Firebase
       import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
       import { 
         getAuth, 
@@ -192,18 +192,18 @@
         onAuthStateChanged 
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
       import { 
-        getFirestore, // MODIFICATO: Non più getDatabase
-        collection,   // MODIFICATO
-        doc,          // MODIFICATO
-        onSnapshot,   // MODIFICATO
-        addDoc,       // MODIFICATO
-        deleteDoc,    // MODIFICATO
-        query         // MODIFICATO
+        getFirestore,
+        collection,
+        doc,
+        onSnapshot,
+        addDoc,
+        deleteDoc,
+        query
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // --- Variabili Globali (MODIFICATE PER IL TUO PROGETTO REALE) ---
+      // --- Variabili Globali ---
       
-      // La variabile `firebaseConfig` ora è caricata dal file esterno `firebase-config.js`
+      // La variabile `firebaseConfig` è caricata da `firebase-config.js`
       
       // Controllo per assicurarsi che il file sia stato caricato
       if (typeof firebaseConfig === 'undefined') {
@@ -213,22 +213,19 @@
         throw new Error(errorMsg);
       }
       
-      // Usiamo il projectId per il path del database.
       const appId = firebaseConfig.projectId || 'default-app-id';
       
-      // Nel tuo progetto reale, `initialAuthToken` non esisterà.
-      // Il codice gestirà automaticamente il login anonimo (signInAsGuest).
-      // @ts-ignore
+      // Gestisce sia il login "reale" (null) che quello "preview" (con token)
       const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
       
       // ----------------------------------------------------
 
       // Variabili di stato globali
       let db, auth, userId, isAuthReady = false;
-      let pathIncassi = ''; // Path string
-      let localIncassi = []; // Cache locale dei dati
-      let pathUscite = ''; // Path string
-      let localUscite = []; // Cache locale delle uscite
+      let pathIncassi = ''; 
+      let localIncassi = []; 
+      let pathUscite = ''; 
+      let localUscite = []; 
 
       // Elementi DOM
       const authStatus = document.getElementById('auth-status');
@@ -267,19 +264,18 @@
         setupSummaryToggle();
         
         // Imposta la data di oggi come default
-        dataInput.valueAsDate = new Date();
+        (dataInput).valueAsDate = new Date();
       });
 
       /**
        * 1. Inizializza Firebase e l'autenticazione
        */
       function initializeFirebase() {
-        // Abilita i log di Firebase per il debug
         setLogLevel('Debug');
         
         try {
           const app = initializeApp(firebaseConfig);
-          db = getFirestore(app); // MODIFICATO: da getDatabase a getFirestore
+          db = getFirestore(app); 
           auth = getAuth(app);
           
           console.log("Firebase (Cloud Firestore) inizializzato correttamente.");
@@ -298,17 +294,14 @@
       function setupAuthListener() {
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            // Utente già loggato (anonimo o no)
             onUserAuthenticated(user.uid);
           } else if (initialAuthToken) {
-            // Se siamo in un ambiente "Preview" con un token
             console.log("Autenticazione con token personalizzato...");
             signInWithCustomToken(auth, initialAuthToken).catch((error) => {
               console.error("Errore signInWithCustomToken, tento login anonimo:", error);
               signInAsGuest(); // Fallback
             });
           } else {
-            // Login anonimo per il progetto reale
             console.log("Nessun utente, tento login anonimo...");
             signInAsGuest();
           }
@@ -341,31 +334,26 @@
         console.log(`Path database incassi (Firestore): ${pathIncassi}`);
         console.log(`Path database uscite (Firestore): ${pathUscite}`);
         
-        // Aggiorna l'interfaccia
         authStatus.textContent = "Connesso. Il tuo ID Utente è:";
         userIdEl.textContent = userId;
         userIdEl.classList.remove('hidden');
-        submitBtn.disabled = false;
+        (submitBtn).disabled = false;
         
-        // Avvia i listener per i dati
         setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
       }
 
       /**
        * 4a. Si mette in ascolto dei cambiamenti sul database (INCASSI)
-       * (MODIFICATO per Cloud Firestore)
        */
       function setupSnapshotListenerIncassi() {
         if (!db || !pathIncassi) return;
 
-        // MODIFICATO: onSnapshot su una collection
         const q = query(collection(db, pathIncassi)); 
 
         onSnapshot(q, (snapshot) => { 
           console.log("Dati (Incassi) ricevuti da Firestore.");
           
-          // MODIFICATO: I dati di Firestore sono in snapshot.docs
           localIncassi = [];
           snapshot.docs.forEach((doc) => {
             localIncassi.push({
@@ -374,7 +362,6 @@
             });
           });
 
-          // Ri-renderizza la lista e aggiorna i totali
           renderMovimentiList();
           updateSummary();
 
@@ -387,18 +374,15 @@
 
       /**
        * 4b. Si mette in ascolto dei cambiamenti sul database (USCITE)
-       * (MODIFICATO per Cloud Firestore)
        */
       function setupSnapshotListenerUscite() {
         if (!db || !pathUscite) return;
 
-        // MODIFICATO: onSnapshot su una collection
         const q = query(collection(db, pathUscite)); 
 
         onSnapshot(q, (snapshot) => { 
           console.log("Dati (Uscite) ricevuti da Firestore.");
           
-          // MODIFICATO: I dati di Firestore sono in snapshot.docs
           localUscite = [];
           snapshot.docs.forEach((doc) => {
             localUscite.push({
@@ -407,7 +391,6 @@
             });
           });
 
-          // Ri-renderizza la lista e aggiorna i totali
           renderMovimentiList();
           updateSummary();
 
@@ -422,13 +405,11 @@
        * 5. Imposta i listener sul form
        */
       function setupFormListeners() {
-        // Calcolo totale dinamico
         const inputs = [costoInput, numInput, liberoInput];
         inputs.forEach(input => {
           input.addEventListener('input', updateCalcoloTotale);
         });
         
-        // Gestione submit
         incassoForm.addEventListener('submit', handleSubmit);
       }
       
@@ -444,46 +425,43 @@
 
       /**
        * 6. Gestisce il submit del form (INCASSO + USCITA OPZIONALE)
-       * (MODIFICATO per Cloud Firestore)
        */
       async function handleSubmit(event) {
-        event.preventDefault(); // Impedisce il ricaricamento della pagina
+        event.preventDefault(); 
         if (!isAuthReady) {
           showError("Autenticazione non ancora pronta.");
           return;
         }
 
-        // Blocca il pulsante per evitare doppi click
-        submitBtn.disabled = true;
+        (submitBtn).disabled = true;
         submitBtn.textContent = "Salvataggio in corso...";
 
-        // Raccogli i dati dal form
         const form = event.target;
         const dataIncasso = {
-          corso: form.corso.value,
-          data: form.data.value,
-          costoPerPartecipante: parseFloat(form['costo-per-partecipante'].value),
-          numPartecipanti: parseInt(form['num-partecipanti'].value),
-          costoLibero: parseFloat(form['costo-libero'].value) || 0,
+          corso: (form).corso.value,
+          data: (form).data.value,
+          costoPerPartecipante: parseFloat((form)['costo-per-partecipante'].value),
+          numPartecipanti: parseInt((form)['num-partecipanti'].value),
+          costoLibero: parseFloat((form)['costo-libero'].value) || 0,
           userId: userId,
+          totale: 0 
         };
-        // Calcola il totale lato client
         dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
 
-        const costoPersonale = parseFloat(form['costo-personale'].value) || 0;
+        const costoPersonale = parseFloat((form)['costo-personale'].value) || 0;
 
         try {
           hideError();
           
-          // 1. Salva l'incasso (MODIFICATO: addDoc)
+          // 1. Salva l'incasso
           await addDoc(collection(db, pathIncassi), dataIncasso);
           console.log("Incasso salvato con successo!");
           
-          // 2. Salva l'uscita (se presente) (MODIFICATO: addDoc)
+          // 2. Salva l'uscita (se presente)
           if (costoPersonale > 0) {
             const dataUscita = {
               descrizione: "Costo Personale",
-              data: dataInput.value, // Stessa data dell'incasso
+              data: (dataInput).value, // Stessa data dell'incasso
               importo: costoPersonale,
               userId: userId
             };
@@ -491,17 +469,15 @@
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
-          // Reset del form
-          form.reset();
-          dataInput.valueAsDate = new Date(); // Reimposta la data a oggi
-          updateCalcoloTotale(); // Azzera il calcolo
+          (form).reset();
+          (dataInput).valueAsDate = new Date(); // Reimposta la data a oggi
+          updateCalcoloTotale(); 
 
         } catch (e) {
           console.error("Errore nel salvataggio:", e);
           showError(`Errore nel salvataggio: ${e.message}`);
         } finally {
-          // Riabilita il pulsante
-          submitBtn.disabled = false;
+          (submitBtn).disabled = false;
           submitBtn.textContent = "Salva Movimento";
         }
       }
@@ -510,9 +486,8 @@
        * 7. Renderizza l'intera lista dei movimenti (incassi + uscite)
        */
       function renderMovimentiList() {
-        movimentiList.innerHTML = ''; // Pulisce la lista
+        movimentiList.innerHTML = ''; 
 
-        // Combina e ordina i dati
         const tuttiMovimenti = [
             ...localIncassi.map(i => ({ ...i, type: 'incasso' })),
             ...localUscite.map(u => ({ ...u, type: 'uscita' }))
@@ -546,18 +521,15 @@
       
       /**
        * 7a. Elimina un documento da Firestore (INCASSO)
-       * (MODIFICATO per Cloud Firestore)
        */
       async function deleteIncasso(docId) {
-        // Usa un prompt sincrono semplice per la conferma
-        // NOTA: in un'app reale, usare un modal custom
         const sic = prompt("Sei sicuro di voler eliminare questo incasso? Scrivi 'SI' per confermare.");
         if (sic !== 'SI') return;
 
         try {
           hideError();
-          const docRef = doc(db, pathIncassi, docId); // MODIFICATO
-          await deleteDoc(docRef); // MODIFICATO
+          const docRef = doc(db, pathIncassi, docId); 
+          await deleteDoc(docRef); 
           console.log("Documento (Incasso) eliminato:", docId);
         } catch (e) {
           console.error("Errore eliminazione incasso:", e);
@@ -567,7 +539,6 @@
       
       /**
        * 7b. Elimina un documento da Firestore (USCITA)
-       * (MODIFICATO per Cloud Firestore)
        */
       async function deleteUscita(docId) {
         const sic = prompt("Sei sicuro di voler eliminare questa uscita? Scrivi 'SI' per confermare.");
@@ -575,8 +546,8 @@
 
         try {
           hideError();
-          const docRef = doc(db, pathUscite, docId); // MODIFICATO
-          await deleteDoc(docRef); // MODIFICATO
+          const docRef = doc(db, pathUscite, docId); 
+          await deleteDoc(docRef); 
           console.log("Documento (Uscita) eliminato:", docId);
         } catch (e) {
           console.error("Errore eliminazione uscita:", e);
@@ -601,9 +572,9 @@
        * 9. Aggiorna il calcolo del totale nel form
        */
       function updateCalcoloTotale() {
-        const costo = parseFloat(costoInput.value) || 0;
-        const num = parseInt(numInput.value) || 0;
-        const libero = parseFloat(liberoInput.value) || 0;
+        const costo = parseFloat((costoInput).value) || 0;
+        const num = parseInt((numInput).value) || 0;
+        const libero = parseFloat((liberoInput).value) || 0;
         const totale = (costo * num) + libero;
         calcoloTotale.textContent = formatCurrency(totale);
       }
@@ -633,7 +604,7 @@
         return new Intl.NumberFormat('it-IT', {
           style: 'currency',
           currency: 'EUR'
-        }).format(value);
+        }).format(value || 0);
       }
 
       /**

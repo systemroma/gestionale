@@ -1,0 +1,8 @@
+Ignora il file di configurazione che contiene le chiavi segrete
+
+firebase-config.js
+
+Ignora altre cartelle comuni di sviluppo
+
+node_modules/
+.DS_Store

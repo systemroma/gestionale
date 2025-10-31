@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionale Incassi Corsi</title>
+    <!-- Carica Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carica il font Inter -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
         /* Applica il font Inter come default */
@@ -23,15 +25,18 @@
 </head>
 <body class="bg-gray-100">
 
+    <!-- Contenitore Autenticazione (Visibile di default) -->
     <div id="login-container" class="min-h-screen flex items-center justify-center p-4">
         <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
             
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Accesso Gestionale</h2>
 
+            <!-- Messaggio di Errore Autenticazione -->
             <div id="auth-error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                 <span class="font-medium">Errore:</span> <span id="auth-error-text"></span>
             </div>
 
+            <!-- Form di Login -->
             <form id="login-form" class="space-y-4 mb-6">
                 <div>
                     <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -53,8 +58,10 @@
         </div>
     </div>
 
+    <!-- Contenitore App Principale (Nascosto di default) -->
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl hidden">
         
+        <!-- Intestazione -->
         <header class="mb-6 flex flex-col sm:flex-row justify-between sm:items-center">
             <div>
                 <h1 class="text-4xl font-bold text-gray-800">Gestionale Incassi Corsi</h1>
@@ -63,11 +70,13 @@
                 </p>
             </div>
             
+            <!-- Selettore Anno -->
             <div class="flex items-center space-x-4 mt-4 sm:mt-0">
                 <div class="flex items-center space-x-2">
                     <label for="year-selector" class="text-sm font-medium text-gray-700">Anno:</label>
                     <select id="year-selector" class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </select>
+                        <!-- Le opzioni verranno popolate da JS -->
+                    </select>
                 </div>
                 <button id="logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition shadow-md">
                     Logout
@@ -75,19 +84,24 @@
             </div>
         </header>
 
+        <!-- Contenuto Principale: Form + Lista -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+            <!-- Colonna 1: Form Aggiungi Incasso -->
             <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
                     Aggiungi Movimento
                 </h2>
 
+                <!-- Messaggio di Errore App -->
                 <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                     <span class="font-medium">Errore:</span> <span id="error-text"></span>
                 </div>
 
+                <!-- Form -->
                 <form id="incasso-form" class="space-y-4">
                     
+                    <!-- Campo: Corso -->
                     <div>
                         <label for="corso" class="block text-sm font-medium text-gray-700 mb-1">
                             Corso
@@ -101,6 +115,7 @@
                         </select>
                     </div>
 
+                    <!-- Campo: Data -->
                     <div>
                         <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
                             Data Svolgimento
@@ -108,6 +123,7 @@
                         <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
+                    <!-- Campo: Costo per Partecipante -->
                     <div>
                         <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
                             Costo per Partecipante (€)
@@ -115,6 +131,7 @@
                         <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
+                    <!-- Campo: Numero Partecipanti -->
                     <div>
                         <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
                             Numero Partecipanti
@@ -122,6 +139,7 @@
                         <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
+                    <!-- Campo: Costo Libero -->
                     <div>
                         <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
                             Costi Extra Incasso (€) <span class="text-gray-500">(Opzionale)</span>
@@ -129,6 +147,7 @@
                         <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" placeholder="Es. 25.50" value="0" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
+                    <!-- Campo: Costo Personale (Uscita) -->
                     <div class="pt-4 border-t mt-4">
                         <label for="costo-personale" class="block text-sm font-medium text-gray-700 mb-1">
                             Costo Personale (Uscita) <span class="text-gray-500">(Opzionale)</span>
@@ -137,6 +156,7 @@
                         <p class="text-xs text-gray-500 mt-1">Verrà salvato come un'uscita separata con la stessa data.</p>
                     </div>
 
+                    <!-- Riepilogo Calcolo -->
                     <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <h3 class="text-lg font-semibold text-gray-800">Totale Incasso Calcolato</h3>
                         <p id="calcolo-totale" class="text-xl font-bold text-blue-600">
@@ -144,14 +164,17 @@
                         </p>
                     </div>
 
+                    <!-- Pulsante Submit -->
                     <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
                         Salva Movimento
                     </button>
                 </form>
             </div>
 
+            <!-- Colonna 2: Lista dei Movimenti (Incassi + Uscite) -->
             <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
                 
+                <!-- Intestazione Lista Movimenti -->
                 <div class="flex justify-between items-center mb-5 border-b pb-2">
                     <h2 class="text-2xl font-semibold text-gray-800">
                         Movimenti Registrati
@@ -161,25 +184,31 @@
                     </button>
                 </div>
 
+                <!-- Contenuto Lista Movimenti (Wrapper per nascondere) -->
                 <div id="movimenti-content">
+                    <!-- Stato di Caricamento -->
                     <div id="loading-state" class="text-center p-10 text-gray-600">
                         <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
                         <p>Caricamento movimenti dal database...</p>
                     </div>
                     
+                    <!-- Stato Vuoto -->
                     <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
                         <p class="text-gray-600">Nessun movimento ancora registrato.</p>
                         <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
                     </div>
                     
+                    <!-- Lista Movimenti -->
                     <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-                        </ul>
+                        <!-- Gli elementi (incassi e uscite) verranno aggiunti qui da JS -->
+                    </ul>
                 </div>
 
             </div>
 
         </div>
 
+        <!-- Riepilogo Finanziario a Scomparsa (SPOSTATO QUI IN FONDO) -->
         <div class="bg-white p-4 rounded-lg shadow-md mt-8">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
@@ -188,6 +217,7 @@
                 </button>
             </div>
             
+            <!-- Contenuto del Riepilogo (Nascosto di default) -->
             <div id="summary-content" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <p class="text-sm font-medium text-gray-500 uppercase">Totale Incassi</p>
@@ -206,6 +236,7 @@
 
     </div>
 
+    <!-- Modale di Conferma Cancellazione -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
             <h3 class="text-lg font-semibold mb-4">Sei sicuro?</h3>
@@ -221,8 +252,10 @@
         </div>
     </div>
 
+    <!-- CARICA LA CONFIGURAZIONE PRIMA DELLO SCRIPT PRINCIPALE -->
     <script src="firebase-config.js"></script>
 
+    <!-- Script per Firebase e logica dell'app -->
     <script type="module">
       // Import necessari da Firebase
       import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -551,14 +584,16 @@
 
       /**
        * 6f. Funzione helper per aggiornare i path del DB
+       *
+       * QUESTA È LA CORREZIONE IMPORTANTE
        */
       function updateDatabasePaths() {
           if (!userId) return;
-          // Struttura: users/{UID}/{ANNO}/incassi
-          pathIncassi = `users/${userId}/${selectedYear}/incassi`;
-          pathUscite = `users/${userId}/${selectedYear}/uscite`;
+          // Struttura CORRETTA (5 segmenti): users/{UID}/data/{ANNO}/incassi
+          pathIncassi = `users/${userId}/data/${selectedYear}/incassi`;
+          pathUscite = `users/${userId}/data/${selectedYear}/uscite`;
           console.log(`Path DB aggiornati per l'anno ${selectedYear}`);
-          console.log(pathIncassi);
+          console.log("Nuovo path incassi:", pathIncassi);
       }
 
       /**
@@ -602,7 +637,7 @@
 
         try {
           hideError();
-          // Salva nel path corretto (es. /users/UID/2025/incassi)
+          // Salva nel path corretto (es. /users/UID/data/2025/incassi)
           await addDoc(collection(db, pathIncassi), dataIncasso);
           console.log("Incasso salvato con successo!");
           
@@ -613,7 +648,7 @@
               importo: costoPersonale,
               userId: userId 
             };
-            // Salva nel path corretto (es. /users/UID/2025/uscite)
+            // Salva nel path corretto (es. /users/UID/data/2025/uscite)
             await addDoc(collection(db, pathUscite), dataUscita);
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }

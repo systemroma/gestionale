@@ -25,15 +25,53 @@
 </head>
 <body class="bg-gray-100">
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+    <!-- Contenitore Autenticazione (Visibile di default) -->
+    <div id="login-container" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+            
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Accesso Gestionale</h2>
+
+            <!-- Messaggio di Errore Autenticazione -->
+            <div id="auth-error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
+                <span class="font-medium">Errore:</span> <span id="auth-error-text"></span>
+            </div>
+
+            <!-- Form di Login -->
+            <form id="login-form" class="space-y-4 mb-6">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="login-email" name="email" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="login-password" name="password" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md">
+                    Accedi
+                </button>
+            </form>
+            
+            <p class="text-xs text-center text-gray-500">
+                Solo l'utente admin pre-configurato può accedere.
+            </p>
+
+        </div>
+    </div>
+
+    <!-- Contenitore App Principale (Nascosto di default) -->
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl hidden">
         
         <!-- Intestazione -->
-        <header class="mb-6">
-            <h1 class="text-4xl font-bold text-gray-800">Gestionale Incassi Corsi</h1>
-            <p id="auth-status" class="text-gray-600 mt-1">
-                Connessione in corso...
-                <span id="user-id" class="font-mono text-sm p-1 bg-gray-200 rounded hidden"></span>
-            </p>
+        <header class="mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800">Gestionale Incassi Corsi</h1>
+                <p id="auth-status" class="text-gray-600 mt-1">
+                    Connessione in corso...
+                </p>
+            </div>
+            <button id="logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition shadow-md">
+                Logout
+            </button>
         </header>
 
         <!-- Riepilogo Finanziario a Scomparsa -->
@@ -71,7 +109,7 @@
                     Aggiungi Movimento
                 </h2>
 
-                <!-- Messaggio di Errore -->
+                <!-- Messaggio di Errore App -->
                 <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                     <span class="font-medium">Errore:</span> <span id="error-text"></span>
                 </div>
@@ -143,7 +181,7 @@
                     </div>
 
                     <!-- Pulsante Submit -->
-                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
                         Salva Movimento
                     </button>
                 </form>
@@ -176,15 +214,19 @@
         </div>
     </div>
 
+    <!-- CARICA LA CONFIGURAZIONE PRIMA DELLO SCRIPT PRINCIPALE -->
+    <script src="firebase-config.js"></script>
+
     <!-- Script per Firebase e logica dell'app -->
     <script type="module">
       // Import necessari da Firebase
       import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
       import { 
         getAuth, 
-        signInAnonymously, 
-        signInWithCustomToken, 
-        onAuthStateChanged 
+        onAuthStateChanged,
+        // RIMOSSO: createUserWithEmailAndPassword (non c'è registrazione)
+        signInWithEmailAndPassword,     // Per il Login
+        signOut                         // Per il Logout
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
       import { 
         getFirestore,
@@ -198,43 +240,17 @@
 
       // --- Variabili Globali ---
       
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // !! INCOLLA QUI LA TUA CONFIGURAZIONE DA FIREBASE !!
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // (La trovi nelle Impostazioni Progetto -> Le tue app -> Icona </>)
-      //
-      // ATTENZIONE ALLA SICUREZZA:
-      // Se usi Git, aggiungi il nome di questo file (es. "index.html") 
-      // al tuo file .gitignore
-      //
-const firebaseConfig = {
-
-  apiKey: "AIzaSyBWFtdnFZ98qYWRV4QEfvapSlzDktrzNUk",
-
-  authDomain: "gestionale-2b7b4.firebaseapp.com",
-
-  projectId: "gestionale-2b7b4",
-
-  storageBucket: "gestionale-2b7b4.firebasestorage.app",
-
-  messagingSenderId: "468705284783",
-
-  appId: "1:468705284783:web:5058b242b3127f000a7a5a"
-
-};
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // La variabile `firebaseConfig` ora è caricata dal file esterno `firebase-config.js`
       
-      
-      // --- BLOCCO DI CONTROLLO ERRORE RIMOSSO ---
-      // Ho rimosso il controllo che ti dava il falso errore.
-      // Se la configurazione qui sopra è sbagliata, 
-      // vedrai un errore reale di Firebase nella console (F12).
-      
+      // Controllo per assicurarsi che il file sia stato caricato
+      if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
+        const errorMsg = "ERRORE: `firebaseConfig` non trovato o non valido. Assicurati che `firebase-config.js` sia presente, salvato, e contenga la tua vera configurazione Firebase.";
+        console.error(errorMsg);
+        document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
+        throw new Error(errorMsg);
+      }
       
       const appId = firebaseConfig.projectId || 'default-app-id';
-      
-      // Gestisce sia il login "reale" (null) che quello "preview" (con token)
-      const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
       
       // ----------------------------------------------------
 
@@ -243,18 +259,30 @@ const firebaseConfig = {
       let pathIncassi = ''; 
       let localIncassi = []; 
       let pathUscite = ''; 
-      let localUscite = []; 
+      let localUscite = [];
+      
+      // Listener di Firestore (per staccarli al logout)
+      let unsubscribeIncassi = () => {};
+      let unsubscribeUscite = () => {};
 
-      // Elementi DOM
+      // Elementi DOM (App)
+      const appContainer = document.getElementById('app-container');
       const authStatus = document.getElementById('auth-status');
-      const userIdEl = document.getElementById('user-id');
+      const logoutBtn = document.getElementById('logout-btn');
       const incassoForm = document.getElementById('incasso-form');
       const submitBtn = document.getElementById('submit-btn');
       const movimentiList = document.getElementById('movimenti-list');
       const loadingState = document.getElementById('loading-state');
       const emptyState = document.getElementById('empty-state');
       
-      // Elementi Form
+      // Elementi DOM (Auth)
+      const loginContainer = document.getElementById('login-container');
+      const loginForm = document.getElementById('login-form');
+      // RIMOSSO: registerForm
+      const authErrorMessage = document.getElementById('auth-error-message');
+      const authErrorText = document.getElementById('auth-error-text');
+
+      // Elementi Form (App)
       const dataInput = document.getElementById('data');
       const costoInput = document.getElementById('costo-per-partecipante');
       const numInput = document.getElementById('num-partecipanti');
@@ -262,14 +290,14 @@ const firebaseConfig = {
       const costoPersonaleInput = document.getElementById('costo-personale');
       const calcoloTotale = document.getElementById('calcolo-totale');
       
-      // Elementi Riepilogo
+      // Elementi Riepilogo (App)
       const toggleSummaryBtn = document.getElementById('toggle-summary-btn');
       const summaryContent = document.getElementById('summary-content');
       const totalIncassiEl = document.getElementById('total-incassi');
       const totalUsciteEl = document.getElementById('total-uscite');
       const totalSaldoEl = document.getElementById('total-saldo');
       
-      // Elementi Errore
+      // Elementi Errore (App)
       const errorMessage = document.getElementById('error-message');
       const errorText = document.getElementById('error-text');
 
@@ -277,16 +305,9 @@ const firebaseConfig = {
        * Inizializza l'applicazione al caricamento della pagina
        */
       document.addEventListener('DOMContentLoaded', () => {
-        // Controllo aggiuntivo per assicurarsi che i valori non siano quelli di default
-        if (firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
-            const errorMsg = "ERRORE: La configurazione Firebase non è stata incollata. Apri il file .html (o index.html), scorri fino allo script e sostituisci i segnaposto 'INCOLLA_QUI...' con i tuoi veri valori.";
-            console.error(errorMsg);
-            document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
-            return; // Interrompe l'esecuzione
-        }
-          
         initializeFirebase();
-        setupFormListeners();
+        setupFormListeners(); // Listener per il form dell'app
+        setupAuthForms(); // Listener per login/logout
         setupSummaryToggle();
         
         // Imposta la data di oggi come default
@@ -294,153 +315,174 @@ const firebaseConfig = {
       });
 
       /**
-       * 1. Inizializza Firebase e l'autenticazione
+       * 1. Inizializza Firebase
        */
       function initializeFirebase() {
         setLogLevel('Debug');
-        
         try {
           const app = initializeApp(firebaseConfig);
           db = getFirestore(app); 
           auth = getAuth(app);
-          
           console.log("Firebase (Cloud Firestore) inizializzato correttamente.");
-          setupAuthListener();
-
+          setupAuthListener(); // Avvia il listener principale
         } catch (e) {
           console.error("Errore inizializzazione Firebase:", e);
-          showError(`Errore inizializzazione Firebase: ${e.message}`);
-          authStatus.textContent = "Errore di connessione.";
+          showAuthError(`Errore inizializzazione Firebase: ${e.message}`);
         }
       }
 
       /**
-       * 2. Imposta il listener per lo stato di autenticazione
+       * 2. Imposta il listener per lo stato di autenticazione (cuore dell'app)
        */
       function setupAuthListener() {
         onAuthStateChanged(auth, (user) => {
+          // Stacca i vecchi listener prima di fare qualsiasi cosa
+          unsubscribeIncassi();
+          unsubscribeUscite();
+
           if (user) {
-            onUserAuthenticated(user.uid);
-          } else if (initialAuthToken) {
-            console.log("Autenticazione con token personalizzato...");
-            signInWithCustomToken(auth, initialAuthToken).catch((error) => {
-              console.error("Errore signInWithCustomToken, tento login anonimo:", error);
-              signInAsGuest(); // Fallback
-            });
+            // --- UTENTE LOGGATO ---
+            console.log("Utente loggato:", user.uid);
+            onUserAuthenticated(user);
+            appContainer.classList.remove('hidden');
+            loginContainer.classList.add('hidden');
+            hideAuthError();
           } else {
-            console.log("Nessun utente, tento login anonimo...");
-            signInAsGuest();
+            // --- UTENTE NON LOGGATO (LOGOUT) ---
+            console.log("Nessun utente loggato.");
+            userId = null;
+            isAuthReady = false;
+            appContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            
+            // Pulisci i dati vecchi
+            localIncassi = [];
+            localUscite = [];
+            renderMovimentiList();
+            updateSummary();
+            authStatus.textContent = "Disconnesso.";
           }
         });
       }
 
       /**
-       * 2b. Esegue il login come utente anonimo
+       * 3. Imposta i listener per i form di login e logout
        */
-      function signInAsGuest() {
-        signInAnonymously(auth).catch((error) => {
-          console.error("Errore login anonimo:", error);
-          showError(`Impossibile autenticarsi anonimamente: ${error.message}`);
-          authStatus.textContent = "Autenticazione fallita.";
+      function setupAuthForms() {
+        // RIMOSSO: registerForm.addEventListener
+        loginForm.addEventListener('submit', handleLogin);
+        logoutBtn.addEventListener('click', handleLogout);
+      }
+
+      /**
+       * 3a. Gestisce il login
+       */
+      async function handleLogin(e) {
+        e.preventDefault();
+        hideAuthError();
+        const email = (e.target).email.value;
+        const password = (e.target).password.value;
+
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          // onAuthStateChanged si occuperà del resto
+        } catch (error) {
+          console.error("Errore login:", error.code);
+          showAuthError(getFriendlyAuthError(error.code));
+        }
+      }
+
+      /**
+       * 3b. Gestisce il logout
+       */
+      function handleLogout() {
+        signOut(auth).catch(error => {
+          console.error("Errore logout:", error);
+          showError("Errore durante il logout."); // Mostra errore nell'app
         });
       }
 
       /**
-       * 3. Chiamata quando l'utente è autenticato con successo
+       * 4. Chiamata quando l'utente è autenticato con successo
        */
-      function onUserAuthenticated(uid) {
-        userId = uid;
+      function onUserAuthenticated(user) {
+        userId = user.uid;
         isAuthReady = true;
 
-        // Costruisci i path *privati* per i dati dell'utente
-        pathIncassi = `/artifacts/${appId}/users/${userId}/incassi`;
-        pathUscite = `/artifacts/${appId}/users/${userId}/uscite`;
+        // Path standard per i dati privati dell'utente
+        pathIncassi = `users/${userId}/incassi`;
+        pathUscite = `users/${userId}/uscite`;
         
-        console.log(`Utente autenticato: ${userId}`);
         console.log(`Path database incassi (Firestore): ${pathIncassi}`);
         console.log(`Path database uscite (Firestore): ${pathUscite}`);
         
-        authStatus.textContent = "Connesso. Il tuo ID Utente è:";
-        userIdEl.textContent = userId;
-        userIdEl.classList.remove('hidden');
+        authStatus.textContent = `Connesso come: ${user.email}`;
         (submitBtn).disabled = false;
         
+        // Avvia i listener per i dati
         setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
       }
 
       /**
-       * 4a. Si mette in ascolto dei cambiamenti sul database (INCASSI)
+       * 5a. Si mette in ascolto dei cambiamenti sul database (INCASSI)
        */
       function setupSnapshotListenerIncassi() {
         if (!db || !pathIncassi) return;
-
         const q = query(collection(db, pathIncassi)); 
 
-        onSnapshot(q, (snapshot) => { 
+        // Salva la funzione di unsubscribe per staccarla al logout
+        unsubscribeIncassi = onSnapshot(q, (snapshot) => { 
           console.log("Dati (Incassi) ricevuti da Firestore.");
-          
           localIncassi = [];
           snapshot.docs.forEach((doc) => {
-            localIncassi.push({
-              id: doc.id,
-              ...doc.data()
-            });
+            localIncassi.push({ id: doc.id, ...doc.data() });
           });
-
           renderMovimentiList();
           updateSummary();
-
         }, (error) => {
           console.error("Errore in onSnapshot (Incassi):", error);
-          showError("Impossibile caricare gli incassi in tempo reale.");
+          showError(`Impossibile caricare gli incassi: ${error.message}`);
           loadingState.classList.add('hidden');
         });
       }
 
       /**
-       * 4b. Si mette in ascolto dei cambiamenti sul database (USCITE)
+       * 5b. Si mette in ascolto dei cambiamenti sul database (USCITE)
        */
       function setupSnapshotListenerUscite() {
         if (!db || !pathUscite) return;
-
         const q = query(collection(db, pathUscite)); 
 
-        onSnapshot(q, (snapshot) => { 
+        // Salva la funzione di unsubscribe
+        unsubscribeUscite = onSnapshot(q, (snapshot) => { 
           console.log("Dati (Uscite) ricevuti da Firestore.");
-          
           localUscite = [];
           snapshot.docs.forEach((doc) => {
-            localUscite.push({
-              id: doc.id,
-              ...doc.data()
-            });
+            localUscite.push({ id: doc.id, ...doc.data() });
           });
-
           renderMovimentiList();
           updateSummary();
-
         }, (error) => {
           console.error("Errore in onSnapshot (Uscite):", error);
-          showError("Impossibile caricare le uscite in tempo reale.");
+          showError(`Impossibile caricare le uscite: ${error.message}`);
           loadingState.classList.add('hidden');
         });
       }
 
       /**
-       * 5. Imposta i listener sul form
+       * 6. Imposta i listener sul form dell'app
        */
       function setupFormListeners() {
         const inputs = [costoInput, numInput, liberoInput];
         inputs.forEach(input => {
           input.addEventListener('input', updateCalcoloTotale);
         });
-        
         incassoForm.addEventListener('submit', handleSubmit);
       }
       
       /**
-       * 5b. Imposta il listener per il toggle del riepilogo
+       * 6b. Imposta il listener per il toggle del riepilogo
        */
       function setupSummaryToggle() {
         toggleSummaryBtn.addEventListener('click', () => {
@@ -450,7 +492,7 @@ const firebaseConfig = {
       }
 
       /**
-       * 6. Gestisce il submit del form (INCASSO + USCITA OPZIONALE)
+       * 7. Gestisce il submit del form (INCASSO + USCITA OPZIONALE)
        */
       async function handleSubmit(event) {
         event.preventDefault(); 
@@ -469,7 +511,7 @@ const firebaseConfig = {
           costoPerPartecipante: parseFloat((form)['costo-per-partecipante'].value),
           numPartecipanti: parseInt((form)['num-partecipanti'].value),
           costoLibero: parseFloat((form)['costo-libero'].value) || 0,
-          userId: userId,
+          userId: userId, // Associa l'incasso all'utente
           totale: 0 
         };
         dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
@@ -478,25 +520,22 @@ const firebaseConfig = {
 
         try {
           hideError();
-          
-          // 1. Salva l'incasso
           await addDoc(collection(db, pathIncassi), dataIncasso);
           console.log("Incasso salvato con successo!");
           
-          // 2. Salva l'uscita (se presente)
           if (costoPersonale > 0) {
             const dataUscita = {
               descrizione: "Costo Personale",
-              data: (dataInput).value, // Stessa data dell'incasso
+              data: (dataInput).value, 
               importo: costoPersonale,
-              userId: userId
+              userId: userId // Associa l'uscita all'utente
             };
             await addDoc(collection(db, pathUscite), dataUscita);
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
           (form).reset();
-          (dataInput).valueAsDate = new Date(); // Reimposta la data a oggi
+          (dataInput).valueAsDate = new Date(); 
           updateCalcoloTotale(); 
 
         } catch (e) {
@@ -519,7 +558,6 @@ const firebaseConfig = {
             ...localUscite.map(u => ({ ...u, type: 'uscita' }))
         ];
 
-        // Ordina per data, dal più recente al più vecchio
         tuttiMovimenti.sort((a, b) => b.data.localeCompare(a.data));
 
         if (tuttiMovimenti.length === 0) {
@@ -605,37 +643,45 @@ const firebaseConfig = {
         calcoloTotale.textContent = formatCurrency(totale);
       }
 
-      // --- Funzioni di Utility ---
+      // --- Funzioni di Utility (Errori) ---
 
-      /**
-       * Mostra un messaggio di errore
-       */
       function showError(message) {
         errorText.textContent = message;
         errorMessage.classList.remove('hidden');
       }
-
-      /**
-       * Nasconde il messaggio di errore
-       */
       function hideError() {
         errorMessage.classList.add('hidden');
         errorText.textContent = '';
       }
+      function showAuthError(message) {
+        authErrorText.textContent = message;
+        authErrorMessage.classList.remove('hidden');
+      }
+      function hideAuthError() {
+        authErrorMessage.classList.add('hidden');
+        authErrorText.textContent = '';
+      }
+      function getFriendlyAuthError(code) {
+        switch (code) {
+          case 'auth/user-not-found':
+            return "Nessun utente trovato con questa email.";
+          case 'auth/wrong-password':
+            return "Password errata. Riprova.";
+          case 'auth/invalid-email':
+            return "Formato email non valido.";
+          default:
+            return `Errore sconosciuto: ${code}`;
+        }
+      }
 
-      /**
-       * Formatta un numero come valuta
-       */
+      // --- Funzioni di Utility (Formattazione) ---
+
       function formatCurrency(value) {
         return new Intl.NumberFormat('it-IT', {
           style: 'currency',
           currency: 'EUR'
         }).format(value || 0);
       }
-
-      /**
-       * Formatta la data (YYYY-MM-DD) in un formato leggibile (DD/MM/YYYY)
-       */
       function formatDate(dateString) {
           try {
               const [year, month, day] = dateString.split('-');
@@ -645,9 +691,8 @@ const firebaseConfig = {
           }
       }
       
-      /**
-       * Crea l'HTML per un item "Incasso"
-       */
+      // --- Funzioni di Utility (HTML Templates) ---
+
       function createIncassoHTML(incasso) {
           return `
               <div class="flex-1">
@@ -670,10 +715,6 @@ const firebaseConfig = {
               </button>
           `;
       }
-      
-      /**
-       * Crea l'HTML per un item "Uscita"
-       */
       function createUscitaHTML(uscita) {
           return `
               <div class="flex-1">

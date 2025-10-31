@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionale Incassi Corsi</title>
-    <!-- Carica Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carica il font Inter -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
         /* Applica il font Inter come default */
@@ -25,18 +23,15 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Contenitore Autenticazione (Visibile di default) -->
     <div id="login-container" class="min-h-screen flex items-center justify-center p-4">
         <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
             
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Accesso Gestionale</h2>
 
-            <!-- Messaggio di Errore Autenticazione -->
             <div id="auth-error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                 <span class="font-medium">Errore:</span> <span id="auth-error-text"></span>
             </div>
 
-            <!-- Form di Login -->
             <form id="login-form" class="space-y-4 mb-6">
                 <div>
                     <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -58,10 +53,8 @@
         </div>
     </div>
 
-    <!-- Contenitore App Principale (Nascosto di default) -->
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl hidden">
         
-        <!-- Intestazione -->
         <header class="mb-6 flex flex-col sm:flex-row justify-between sm:items-center">
             <div>
                 <h1 class="text-4xl font-bold text-gray-800">Gestionale Incassi Corsi</h1>
@@ -70,13 +63,11 @@
                 </p>
             </div>
             
-            <!-- Selettore Anno (NUOVO) -->
             <div class="flex items-center space-x-4 mt-4 sm:mt-0">
                 <div class="flex items-center space-x-2">
                     <label for="year-selector" class="text-sm font-medium text-gray-700">Anno:</label>
                     <select id="year-selector" class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <!-- Le opzioni verranno popolate da JS -->
-                    </select>
+                        </select>
                 </div>
                 <button id="logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition shadow-md">
                     Logout
@@ -84,24 +75,19 @@
             </div>
         </header>
 
-        <!-- Contenuto Principale: Form + Lista -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            <!-- Colonna 1: Form Aggiungi Incasso -->
             <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
                     Aggiungi Movimento
                 </h2>
 
-                <!-- Messaggio di Errore App -->
                 <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
                     <span class="font-medium">Errore:</span> <span id="error-text"></span>
                 </div>
 
-                <!-- Form -->
                 <form id="incasso-form" class="space-y-4">
                     
-                    <!-- Campo: Corso -->
                     <div>
                         <label for="corso" class="block text-sm font-medium text-gray-700 mb-1">
                             Corso
@@ -115,7 +101,6 @@
                         </select>
                     </div>
 
-                    <!-- Campo: Data -->
                     <div>
                         <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
                             Data Svolgimento
@@ -123,7 +108,6 @@
                         <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
-                    <!-- Campo: Costo per Partecipante -->
                     <div>
                         <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
                             Costo per Partecipante (€)
@@ -131,7 +115,6 @@
                         <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
-                    <!-- Campo: Numero Partecipanti -->
                     <div>
                         <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
                             Numero Partecipanti
@@ -139,7 +122,6 @@
                         <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
-                    <!-- Campo: Costo Libero -->
                     <div>
                         <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
                             Costi Extra Incasso (€) <span class="text-gray-500">(Opzionale)</span>
@@ -147,7 +129,6 @@
                         <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" placeholder="Es. 25.50" value="0" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
-                    <!-- Campo: Costo Personale (Uscita) -->
                     <div class="pt-4 border-t mt-4">
                         <label for="costo-personale" class="block text-sm font-medium text-gray-700 mb-1">
                             Costo Personale (Uscita) <span class="text-gray-500">(Opzionale)</span>
@@ -156,7 +137,6 @@
                         <p class="text-xs text-gray-500 mt-1">Verrà salvato come un'uscita separata con la stessa data.</p>
                     </div>
 
-                    <!-- Riepilogo Calcolo -->
                     <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <h3 class="text-lg font-semibold text-gray-800">Totale Incasso Calcolato</h3>
                         <p id="calcolo-totale" class="text-xl font-bold text-blue-600">
@@ -164,17 +144,14 @@
                         </p>
                     </div>
 
-                    <!-- Pulsante Submit -->
                     <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
                         Salva Movimento
                     </button>
                 </form>
             </div>
 
-            <!-- Colonna 2: Lista dei Movimenti (Incassi + Uscite) -->
             <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
                 
-                <!-- Intestazione Lista Movimenti -->
                 <div class="flex justify-between items-center mb-5 border-b pb-2">
                     <h2 class="text-2xl font-semibold text-gray-800">
                         Movimenti Registrati
@@ -184,31 +161,25 @@
                     </button>
                 </div>
 
-                <!-- Contenuto Lista Movimenti (Wrapper per nascondere) -->
                 <div id="movimenti-content">
-                    <!-- Stato di Caricamento -->
                     <div id="loading-state" class="text-center p-10 text-gray-600">
                         <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
                         <p>Caricamento movimenti dal database...</p>
                     </div>
                     
-                    <!-- Stato Vuoto -->
                     <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
                         <p class="text-gray-600">Nessun movimento ancora registrato.</p>
                         <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
                     </div>
                     
-                    <!-- Lista Movimenti -->
                     <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-                        <!-- Gli elementi (incassi e uscite) verranno aggiunti qui da JS -->
-                    </ul>
+                        </ul>
                 </div>
 
             </div>
 
         </div>
 
-        <!-- Riepilogo Finanziario a Scomparsa (SPOSTATO QUI IN FONDO) -->
         <div class="bg-white p-4 rounded-lg shadow-md mt-8">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
@@ -217,7 +188,6 @@
                 </button>
             </div>
             
-            <!-- Contenuto del Riepilogo (Nascosto di default) -->
             <div id="summary-content" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <p class="text-sm font-medium text-gray-500 uppercase">Totale Incassi</p>
@@ -236,7 +206,6 @@
 
     </div>
 
-    <!-- Modale di Conferma Cancellazione -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
             <h3 class="text-lg font-semibold mb-4">Sei sicuro?</h3>
@@ -252,10 +221,8 @@
         </div>
     </div>
 
-    <!-- CARICA LA CONFIGURAZIONE PRIMA DELLO SCRIPT PRINCIPALE -->
     <script src="firebase-config.js"></script>
 
-    <!-- Script per Firebase e logica dell'app -->
     <script type="module">
       // Import necessari da Firebase
       import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -278,7 +245,6 @@
       // --- Variabili Globali ---
       
       // La variabile `firebaseConfig` ora è caricata da `firebase-config.js`
-      // @ts-ignore
       if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
         const errorMsg = "ERRORE: `firebaseConfig` non trovato o non valido. Assicurati che `firebase-config.js` sia presente, salvato, e contenga la tua vera configurazione Firebase.";
         console.error(errorMsg);
@@ -286,12 +252,11 @@
         throw new Error(errorMsg);
       }
       
-      // @ts-ignore
       const appId = firebaseConfig.projectId || 'default-app-id';
       
       // --- Variabili di Stato ---
       let db, auth, userId, isAuthReady = false;
-      let selectedYear = new Date().getFullYear(); // NUOVO: Tiene traccia dell'anno
+      let selectedYear = new Date().getFullYear(); // Tiene traccia dell'anno
       let pathIncassi = ''; 
       let localIncassi = []; 
       let pathUscite = ''; 
@@ -304,7 +269,7 @@
       const appContainer = document.getElementById('app-container');
       const authStatus = document.getElementById('auth-status');
       const logoutBtn = document.getElementById('logout-btn');
-      const yearSelector = document.getElementById('year-selector'); // NUOVO
+      const yearSelector = document.getElementById('year-selector');
       const incassoForm = document.getElementById('incasso-form');
       const submitBtn = document.getElementById('submit-btn');
       const movimentiList = document.getElementById('movimenti-list');
@@ -353,9 +318,8 @@
         setupAuthForms(); 
         setupToggleListeners();
         setupModalListeners();
-        setupYearSelector(); // NUOVO
+        setupYearSelector();
         
-        // @ts-ignore
         dataInput.valueAsDate = new Date();
       });
 
@@ -365,7 +329,6 @@
       function initializeFirebase() {
         setLogLevel('Debug');
         try {
-          // @ts-ignore
           const app = initializeApp(firebaseConfig);
           db = getFirestore(app); 
           auth = getAuth(app);
@@ -406,7 +369,6 @@
             renderMovimentiList();
             updateSummary();
             selectedYear = new Date().getFullYear(); // Reset all'anno corrente
-            // @ts-ignore
             yearSelector.value = selectedYear;
             authStatus.textContent = "Disconnesso.";
           }
@@ -427,9 +389,7 @@
       async function handleLogin(e) {
         e.preventDefault();
         hideAuthError();
-        // @ts-ignore
         const email = e.target.email.value;
-        // @ts-ignore
         const password = e.target.password.value;
 
         try {
@@ -460,7 +420,6 @@
         updateDatabasePaths(); // Imposta i path del DB in base all'anno selezionato
         
         authStatus.textContent = `Connesso come: ${user.email}`;
-        // @ts-ignore
         submitBtn.disabled = false;
         
         // Avvia i listener per i dati
@@ -549,11 +508,12 @@
       }
 
       /**
-       * 6d. NUOVO: Popola il selettore dell'anno e aggiunge il listener
+       * 6d. Popola il selettore dell'anno e aggiunge il listener
        */
       function setupYearSelector() {
           const currentYear = new Date().getFullYear();
           const years = [];
+          // Popola 5 anni fa e 1 anno nel futuro
           for (let i = currentYear + 1; i > currentYear - 5; i--) {
               years.push(i);
           }
@@ -562,17 +522,15 @@
               `<option value="${year}">${year}</option>`
           ).join('');
 
-          // @ts-ignore
           yearSelector.value = selectedYear; // Imposta l'anno corrente
           
           yearSelector.addEventListener('change', handleYearChange);
       }
 
       /**
-       * 6e. NUOVO: Gestisce il cambio dell'anno selezionato
+       * 6e. Gestisce il cambio dell'anno selezionato
        */
       function handleYearChange(e) {
-          // @ts-ignore
           selectedYear = parseInt(e.target.value, 10);
           console.log(`Anno cambiato in: ${selectedYear}`);
           
@@ -592,10 +550,11 @@
       }
 
       /**
-       * 6f. NUOVO: Funzione helper per aggiornare i path del DB
+       * 6f. Funzione helper per aggiornare i path del DB
        */
       function updateDatabasePaths() {
           if (!userId) return;
+          // Struttura: users/{UID}/{ANNO}/incassi
           pathIncassi = `users/${userId}/${selectedYear}/incassi`;
           pathUscite = `users/${userId}/${selectedYear}/uscite`;
           console.log(`Path DB aggiornati per l'anno ${selectedYear}`);
@@ -612,43 +571,33 @@
           return;
         }
 
-        // @ts-ignore
         submitBtn.disabled = true;
         submitBtn.textContent = "Salvataggio in corso...";
 
         const form = event.target;
         
         // Valida la data: deve corrispondere all'anno selezionato!
-        // @ts-ignore
         const dataSelezionata = new Date(form.data.value);
-        // @ts-ignore
         const annoData = dataSelezionata.getFullYear();
         
         if(annoData !== selectedYear) {
             showError(`La data del movimento (${annoData}) non corrisponde all'anno selezionato (${selectedYear}). Cambia l'anno o la data.`);
-            // @ts-ignore
             submitBtn.disabled = false;
             submitBtn.textContent = "Salva Movimento";
             return;
         }
 
         const dataIncasso = {
-          // @ts-ignore
           corso: form.corso.value,
-          // @ts-ignore
           data: form.data.value,
-          // @ts-ignore
           costoPerPartecipante: parseFloat(form['costo-per-partecipante'].value),
-          // @ts-ignore
           numPartecipanti: parseInt(form['num-partecipanti'].value),
-          // @ts-ignore
           costoLibero: parseFloat(form['costo-libero'].value) || 0,
           userId: userId,
           totale: 0 
         };
         dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
         
-        // @ts-ignore
         const costoPersonale = parseFloat(form['costo-personale'].value) || 0;
 
         try {
@@ -660,7 +609,6 @@
           if (costoPersonale > 0) {
             const dataUscita = {
               descrizione: "Costo Personale",
-              // @ts-ignore
               data: dataInput.value, 
               importo: costoPersonale,
               userId: userId 
@@ -670,9 +618,7 @@
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
-          // @ts-ignore
           form.reset();
-          // @ts-ignore
           dataInput.valueAsDate = new Date(); 
           updateCalcoloTotale(); 
 
@@ -680,7 +626,6 @@
           console.error("Errore nel salvataggio:", e);
           showError(`Errore nel salvataggio: ${e.message}`);
         } finally {
-          // @ts-ignore
           submitBtn.disabled = false;
           submitBtn.textContent = "Salva Movimento";
         }
@@ -712,11 +657,9 @@
             
             if (movimento.type === 'incasso') {
                 li.innerHTML = createIncassoHTML(movimento);
-                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteIncasso(movimento.id));
             } else {
                 li.innerHTML = createUscitaHTML(movimento);
-                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteUscita(movimento.id));
             }
             movimentiList.appendChild(li);
@@ -775,11 +718,8 @@
        * 9. Aggiorna il calcolo del totale nel form
        */
       function updateCalcoloTotale() {
-        // @ts-ignore
         const costo = parseFloat(costoInput.value) || 0;
-        // @ts-ignore
         const num = parseInt(numInput.value) || 0;
-        // @ts-ignore
         const libero = parseFloat(liberoInput.value) || 0;
         const totale = (costo * num) + libero;
         calcoloTotale.textContent = formatCurrency(totale);

@@ -3,208 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Incassi Corsi</title>
-    
+    <title>Gestionale Incassi Corsi</title>
     <!-- Carica Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- Carica il font Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
-        /* Applica il font Inter a tutto il corpo */
+        /* Applica il font Inter come default */
         body {
             font-family: 'Inter', sans-serif;
+        }
+        /* Stile per un loader semplice */
+        .loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="bg-gray-100">
 
-    <!-- Contenitore principale con sfondo e padding -->
-    <div class="min-h-screen p-4 md:p-8">
-      
-      <!-- Card principale per contenere l'applicazione -->
-      <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
         
-        <!-- Header dell'applicazione -->
-        <header class="p-6 bg-blue-600 text-white">
-          <h1 class="text-3xl font-bold">Gestione Incassi Corsi</h1>
-          
-          <!-- Spazio per ID Utente -->
-          <p id="user-id-display" class="text-sm opacity-90 mt-2">
-            Autenticazione in corso...
-          </p>
+        <!-- Intestazione -->
+        <header class="mb-6">
+            <h1 class="text-4xl font-bold text-gray-800">Gestionale Incassi Corsi</h1>
+            <p id="auth-status" class="text-gray-600 mt-1">
+                Connessione in corso...
+                <span id="user-id" class="font-mono text-sm p-1 bg-gray-200 rounded hidden"></span>
+            </p>
         </header>
 
-        <!-- Riepilogo Finanziario (ora a scomparsa) -->
-        <section class="p-6 bg-gray-50 border-b border-gray-200">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
-            <button id="toggle-riepilogo-btn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-300">
-              Mostra
-            </button>
-          </div>
-          <div id="riepilogo-content" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-            <!-- Totale Incassi -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-green-200">
-              <p class="text-sm font-medium text-gray-500">Totale Incassi</p>
-              <p id="display-totale-incassi" class="text-2xl font-bold text-green-600">0,00 €</p>
-            </div>
-            <!-- Totale Uscite -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-red-200">
-              <p class="text-sm font-medium text-gray-500">Totale Uscite</p>
-              <p id="display-totale-uscite" class="text-2xl font-bold text-red-600">0,00 €</p>
-            </div>
-            <!-- Saldo Attuale -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
-              <p class="text-sm font-medium text-gray-500">Saldo Attuale</p>
-              <p id="display-saldo-attuale" class="text-2xl font-bold text-blue-700">0,00 €</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Area dei contenuti (Form + Lista) -->
-        <main class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          <!-- Colonna 1: Form (Incassi + Uscite) -->
-          <div class="lg:col-span-1 space-y-8">
-            
-            <!-- Sezione: Aggiungi Incasso -->
-            <div>
-              <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
-                Aggiungi Movimento
-              </h2>
-
-              <!-- Messaggio di Errore -->
-              <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
-                <!-- Il contenuto verrà aggiunto da JS -->
-              </div>
-              
-              <form id="incasso-form" class="space-y-4">
-                
-                <div class="p-4 border border-blue-200 rounded-lg">
-                  <h3 class="text-lg font-semibold text-blue-700 mb-3">Incasso Corso</h3>
-                  <!-- Campo: Corso (Select) -->
-                  <div>
-                    <label for="corso" class="block text-sm font-medium text-gray-700 mb-1">
-                      Corso
-                    </label>
-                    <select id="corso" name="corso" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                      <option value="Corso Base di Programmazione">Corso Base di Programmazione</option>
-                      <option value="Corso Avanzato di Design">Corso Avanzato di Design</option>
-                      <option value="Workshop Marketing Digitale">Workshop Marketing Digitale</option>
-                      <option value="Seminario Public Speaking">Seminario Public Speaking</option>
-                      <option value="Altro">Altro</option>
-                    </select>
-                  </div>
-
-                  <!-- Campo: Data -->
-                  <div class="mt-4">
-                    <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
-                      Data Svolgimento
-                    </label>
-                    <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-                  </div>
-
-                  <!-- Campo: Costo per Partecipante -->
-                  <div class="mt-4">
-                    <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
-                      Costo per Partecipante (€)
-                    </label>
-                    <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-                  </div>
-
-                  <!-- Campo: Numero Partecipanti -->
-                  <div class="mt-4">
-                    <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
-                      Numero Partecipanti
-                    </label>
-                    <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-                  </div>
-
-                  <!-- Campo: Costo Libero -->
-                  <div class="mt-4">
-                    <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
-                      Costi Extra / Libero (€)
-                    </label>
-                    <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" value="0" placeholder="Es. 25.50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                  </div>
-
-                  <!-- Sezione Calcolo Totale -->
-                  <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Riepilogo Incasso</h3>
-                    <div class="text-sm text-gray-600 space-y-1 mt-2">
-                      <p>Costo Base: <span id="display-costo-base">0,00 €</span></p>
-                      <p>Costi Extra: <span id="display-costo-extra">0,00 €</span></p>
-                    </div>
-                    <hr class="my-2 border-blue-200" />
-                    <p class="text-xl font-bold text-blue-600">
-                      Totale Incasso: <span id="display-totale">0,00 €</span>
-                    </p>
-                  </div>
-                </div>
-
-                <hr class="my-6 border-gray-300" />
-
-                <!-- Sezione: Aggiungi Uscita (complementare) -->
-                <div class="p-4 border border-red-200 rounded-lg">
-                  <h3 class="text-lg font-semibold text-red-700 mb-3">Uscita (Opzionale)</h3>
-                  
-                  <!-- Campo: Importo Uscita (Costo Personale) -->
-                  <div>
-                    <label for="costo-personale" class="block text-sm font-medium text-gray-700 mb-1">
-                      Costo Personale (€)
-                    </label>
-                    <input type="number" id="costo-personale" name="costo-personale" min="0" step="0.01" value="0" placeholder="Es. 150" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500" />
-                    <p class="text-xs text-gray-500 mt-1">
-                      Verrà salvato come uscita separata usando la stessa data dell'incasso.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Pulsante Submit -->
-                <button id="submit-button" type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed mt-6">
-                  Salva Incasso (e Uscita opz.)
+        <!-- Riepilogo Finanziario a Scomparsa -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
+                <button id="toggle-summary-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                    Mostra
                 </button>
-              </form>
-            </div>
-
-          </div>
-
-          <!-- Colonna 2: Lista UNIFICATA dei movimenti -->
-          <div class="lg:col-span-1">
-            <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
-              Movimenti Registrati
-            </h2>
-            
-            <!-- Stato di Caricamento -->
-            <div id="loading-state" class="text-center p-10 text-gray-600">
-              <p>Caricamento dati dal database...</p>
             </div>
             
-            <!-- Stato Vuoto -->
-            <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
-              <p class="text-gray-600">Nessun movimento registrato.</p>
-              <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
+            <!-- Contenuto del Riepilogo (Nascosto di default) -->
+            <div id="summary-content" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Incassi</p>
+                    <p id="total-incassi" class="text-3xl font-bold text-green-600">€0.00</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Uscite</p>
+                    <p id="total-uscite" class="text-3xl font-bold text-red-600">€0.00</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Saldo Attuale</p>
+                    <p id="total-saldo" class="text-3xl font-bold text-blue-700">€0.00</p>
+                </div>
             </div>
-            
-            <!-- Lista Movimenti (Unificata) -->
-            <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-              <!-- Gli elementi della lista verranno aggiunti da JS -->
-            </ul>
-          </div>
+        </div>
 
-          <!-- Colonna 3: Lista delle uscite (RIMOSSA) -->
+        <!-- Contenuto Principale: Form + Lista -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        </main>
-      </div>
+            <!-- Colonna 1: Form Aggiungi Incasso -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
+                    Aggiungi Movimento
+                </h2>
+
+                <!-- Messaggio di Errore -->
+                <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
+                    <span class="font-medium">Errore:</span> <span id="error-text"></span>
+                </div>
+
+                <!-- Form -->
+                <form id="incasso-form" class="space-y-4">
+                    
+                    <!-- Campo: Corso -->
+                    <div>
+                        <label for="corso" class="block text-sm font-medium text-gray-700 mb-1">
+                            Corso
+                        </label>
+                        <select id="corso" name="corso" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option>Corso Base di Programmazione</option>
+                            <option>Corso Avanzato di Design</option>
+                            <option>Workshop Marketing Digitale</option>
+                            <option>Seminario Public Speaking</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo: Data -->
+                    <div>
+                        <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
+                            Data Svolgimento
+                        </label>
+                        <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+
+                    <!-- Campo: Costo per Partecipante -->
+                    <div>
+                        <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
+                            Costo per Partecipante (€)
+                        </label>
+                        <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+
+                    <!-- Campo: Numero Partecipanti -->
+                    <div>
+                        <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
+                            Numero Partecipanti
+                        </label>
+                        <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+
+                    <!-- Campo: Costo Libero -->
+                    <div>
+                        <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
+                            Costi Extra Incasso (€) <span class="text-gray-500">(Opzionale)</span>
+                        </label>
+                        <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" placeholder="Es. 25.50" value="0" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Campo: Costo Personale (Uscita) -->
+                    <div class="pt-4 border-t mt-4">
+                        <label for="costo-personale" class="block text-sm font-medium text-gray-700 mb-1">
+                            Costo Personale (Uscita) <span class="text-gray-500">(Opzionale)</span>
+                        </label>
+                        <input type="number" id="costo-personale" name="costo-personale" min="0" step="0.01" placeholder="Es. 100" value="0" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">Verrà salvato come un'uscita separata con la stessa data.</p>
+                    </div>
+
+                    <!-- Riepilogo Calcolo -->
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Totale Incasso Calcolato</h3>
+                        <p id="calcolo-totale" class="text-xl font-bold text-blue-600">
+                            €0.00
+                        </p>
+                    </div>
+
+                    <!-- Pulsante Submit -->
+                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Salva Movimento
+                    </button>
+                </form>
+            </div>
+
+            <!-- Colonna 2: Lista dei Movimenti (Incassi + Uscite) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
+                    Movimenti Registrati
+                </h2>
+                
+                <!-- Stato di Caricamento -->
+                <div id="loading-state" class="text-center p-10 text-gray-600">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
+                    <p>Caricamento movimenti dal database...</p>
+                </div>
+                
+                <!-- Stato Vuoto -->
+                <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
+                    <p class="text-gray-600">Nessun movimento ancora registrato.</p>
+                    <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
+                </div>
+                
+                <!-- Lista Movimenti -->
+                <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
+                    <!-- Gli elementi (incassi e uscite) verranno aggiunti qui da JS -->
+                </ul>
+            </div>
+
+        </div>
     </div>
+
+    <!-- CARICA LA CONFIGURAZIONE PRIMA DELLO SCRIPT PRINCIPALE -->
+    <!-- Questo file DEVE contenere: const firebaseConfig = { ... }; -->
+    <!-- Questo file è ignorato da Git (vedi .gitignore) -->
+    <script src="firebase-config.js"></script>
 
     <!-- Script per Firebase e logica dell'app -->
     <script type="module">
-      // Import necessari da Firebase
+      // Import necessari da Firebase (MODIFICATI per Cloud Firestore)
       import { initializeApp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
       import { 
         getAuth, 
@@ -213,223 +192,192 @@
         onAuthStateChanged 
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
       import { 
-        getFirestore, 
-        collection, 
-        doc, 
-        addDoc, 
-        deleteDoc, 
-        onSnapshot, 
-        query
+        getFirestore, // MODIFICATO: Non più getDatabase
+        collection,   // MODIFICATO
+        doc,          // MODIFICATO
+        onSnapshot,   // MODIFICATO
+        addDoc,       // MODIFICATO
+        deleteDoc,    // MODIFICATO
+        query         // MODIFICATO
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // --- Variabili Globali (fornite dall'ambiente) ---
-      const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+      // --- Variabili Globali (MODIFICATE PER IL TUO PROGETTO REALE) ---
+      
+      // La variabile `firebaseConfig` ora è caricata dal file esterno `firebase-config.js`
+      
+      // Controllo per assicurarsi che il file sia stato caricato
+      if (typeof firebaseConfig === 'undefined') {
+        const errorMsg = "ERRORE: `firebaseConfig` non trovato. Assicurati che `firebase-config.js` sia presente e contenga la configurazione.";
+        console.error(errorMsg);
+        document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
+        throw new Error(errorMsg);
+      }
+      
+      // Usiamo il projectId per il path del database.
+      const appId = firebaseConfig.projectId || 'default-app-id';
+      
+      // Nel tuo progetto reale, `initialAuthToken` non esisterà.
+      // Il codice gestirà automaticamente il login anonimo (signInAsGuest).
+      // @ts-ignore
       const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+      
       // ----------------------------------------------------
 
       // Variabili di stato globali
       let db, auth, userId, isAuthReady = false;
-      let collectionPathIncassi = '';
+      let pathIncassi = ''; // Path string
       let localIncassi = []; // Cache locale dei dati
-      let collectionPathUscite = '';
+      let pathUscite = ''; // Path string
       let localUscite = []; // Cache locale delle uscite
-      let localMovimenti = []; // Cache locale combinata
-      
-      // Abilita i log di Firebase per il debug
-      try {
-        setLogLevel('Debug');
-      } catch (e) {
-        console.error("Errore nell'impostare il log level:", e);
-      }
 
-      // Riferimenti agli elementi DOM (Incassi)
-      const form = document.getElementById('incasso-form');
+      // Elementi DOM
+      const authStatus = document.getElementById('auth-status');
+      const userIdEl = document.getElementById('user-id');
+      const incassoForm = document.getElementById('incasso-form');
+      const submitBtn = document.getElementById('submit-btn');
       const movimentiList = document.getElementById('movimenti-list');
-      const submitButton = document.getElementById('submit-button');
-      
-      const corsoInput = document.getElementById('corso');
-      const dataInput = document.getElementById('data');
-      const costoInput = document.getElementById('costo-per-partecipante');
-      const partecipantiInput = document.getElementById('num-partecipanti');
-      const extraInput = document.getElementById('costo-libero');
-      
-      const displayCostoBase = document.getElementById('display-costo-base');
-      const displayCostoExtra = document.getElementById('display-costo-extra');
-      const displayTotale = document.getElementById('display-totale');
-      
       const loadingState = document.getElementById('loading-state');
       const emptyState = document.getElementById('empty-state');
-      const errorMessage = document.getElementById('error-message');
-      const userIdDisplay = document.getElementById('user-id-display');
-
-      // Riferimenti DOM (Uscite)
+      
+      // Elementi Form
+      const dataInput = document.getElementById('data');
+      const costoInput = document.getElementById('costo-per-partecipante');
+      const numInput = document.getElementById('num-partecipanti');
+      const liberoInput = document.getElementById('costo-libero');
       const costoPersonaleInput = document.getElementById('costo-personale');
-      // const usciteList = document.getElementById('uscite-list'); // Rimosso
-      // const loadingStateUscite = document.getElementById('loading-state-uscite'); // Rimosso
-      // const emptyStateUscite = document.getElementById('empty-state-uscite'); // Rimosso
-
-      // Riferimenti DOM (Riepilogo)
-      const riepilogoContent = document.getElementById('riepilogo-content');
-      const toggleRiepilogoBtn = document.getElementById('toggle-riepilogo-btn');
-      const displayTotaleIncassi = document.getElementById('display-totale-incassi');
-      const displayTotaleUscite = document.getElementById('display-totale-uscite');
-      const displaySaldoAttuale = document.getElementById('display-saldo-attuale');
-
-
-      // --- Funzioni Helper ---
-
-      /**
-       * Formatta un numero come valuta (EUR)
-       */
-      function formatCurrency(value) {
-        return (value || 0).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
-      }
+      const calcoloTotale = document.getElementById('calcolo-totale');
+      
+      // Elementi Riepilogo
+      const toggleSummaryBtn = document.getElementById('toggle-summary-btn');
+      const summaryContent = document.getElementById('summary-content');
+      const totalIncassiEl = document.getElementById('total-incassi');
+      const totalUsciteEl = document.getElementById('total-uscite');
+      const totalSaldoEl = document.getElementById('total-saldo');
+      
+      // Elementi Errore
+      const errorMessage = document.getElementById('error-message');
+      const errorText = document.getElementById('error-text');
 
       /**
-       * Formatta una stringa "YYYY-MM-DD" in "DD/MM/YYYY"
+       * Inizializza l'applicazione al caricamento della pagina
        */
-      function formatDate(dateString) {
-        if (!dateString) return '';
-        const [year, month, day] = dateString.split('-');
-        return `${day}/${month}/${year}`;
-      }
-
-      /**
-       * Ottiene la data di oggi come stringa "YYYY-MM-DD" per il campo data
-       */
-      function getTodayDateString() {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Mesi da 0 a 11
-        const dd = String(today.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-      }
-
-      /**
-       * Mostra un messaggio di errore
-       */
-      function showError(message) {
-        errorMessage.textContent = `Errore: ${message}`;
-        errorMessage.classList.remove('hidden');
-      }
-
-      /**
-       * Nasconde il messaggio di errore
-       */
-      function hideError() {
-        errorMessage.classList.add('hidden');
-      }
-
-      // --- Logica dell'applicazione ---
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeFirebase();
+        setupFormListeners();
+        setupSummaryToggle();
+        
+        // Imposta la data di oggi come default
+        dataInput.valueAsDate = new Date();
+      });
 
       /**
        * 1. Inizializza Firebase e l'autenticazione
        */
       function initializeFirebase() {
+        // Abilita i log di Firebase per il debug
+        setLogLevel('Debug');
+        
         try {
-          if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
-            throw new Error("Configurazione Firebase non trovata.");
-          }
-          
           const app = initializeApp(firebaseConfig);
-          db = getFirestore(app);
+          db = getFirestore(app); // MODIFICATO: da getDatabase a getFirestore
           auth = getAuth(app);
           
-          console.log("Firebase inizializzato correttamente.");
+          console.log("Firebase (Cloud Firestore) inizializzato correttamente.");
           setupAuthListener();
 
         } catch (e) {
-          console.error("Errore grave inizializzazione Firebase:", e);
-          showError(`Impossibile connettersi al database. ${e.message}`);
-          loadingState.textContent = "Errore di connessione.";
+          console.error("Errore inizializzazione Firebase:", e);
+          showError(`Errore inizializzazione Firebase: ${e.message}`);
+          authStatus.textContent = "Errore di connessione.";
         }
       }
 
       /**
-       * 2. Gestisce lo stato dell'autenticazione utente
+       * 2. Imposta il listener per lo stato di autenticazione
        */
       function setupAuthListener() {
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
           if (user) {
-            // Utente già autenticato
+            // Utente già loggato (anonimo o no)
             onUserAuthenticated(user.uid);
           } else if (initialAuthToken) {
-            // Autenticazione con token personalizzato
-            try {
-              const userCredential = await signInWithCustomToken(auth, initialAuthToken);
-              onUserAuthenticated(userCredential.user.uid);
-            } catch (e) {
-              console.error("Errore signInWithCustomToken:", e);
-              showError("Errore di autenticazione (token).");
-              await signInAsGuest(); // Fallback su anonimo
-            }
+            // Se siamo in un ambiente "Preview" con un token
+            console.log("Autenticazione con token personalizzato...");
+            signInWithCustomToken(auth, initialAuthToken).catch((error) => {
+              console.error("Errore signInWithCustomToken, tento login anonimo:", error);
+              signInAsGuest(); // Fallback
+            });
           } else {
-            // Autenticazione anonima
-            await signInAsGuest();
+            // Login anonimo per il progetto reale
+            console.log("Nessun utente, tento login anonimo...");
+            signInAsGuest();
           }
         });
       }
-      
-      /**
-       * Fallback per login anonimo
-       */
-       async function signInAsGuest() {
-         try {
-            const userCredential = await signInAnonymously(auth);
-            onUserAuthenticated(userCredential.user.uid);
-         } catch (e) {
-            console.error("Errore signInAnonymously:", e);
-            showError("Impossibile ottenere un ID utente anonimo.");
-            loadingState.textContent = "Errore di autenticazione.";
-         }
-       }
 
       /**
-       * 3. Chiamato quando l'utente è autenticato con successo
+       * 2b. Esegue il login come utente anonimo
+       */
+      function signInAsGuest() {
+        signInAnonymously(auth).catch((error) => {
+          console.error("Errore login anonimo:", error);
+          showError(`Impossibile autenticarsi anonimamente: ${error.message}`);
+          authStatus.textContent = "Autenticazione fallita.";
+        });
+      }
+
+      /**
+       * 3. Chiamata quando l'utente è autenticato con successo
        */
       function onUserAuthenticated(uid) {
         userId = uid;
         isAuthReady = true;
-        
-        // Imposta il path *privato* per i dati di questo utente
-        collectionPathIncassi = `/artifacts/${appId}/users/${userId}/${'incassi'}`;
-        collectionPathUscite = `/artifacts/${appId}/users/${userId}/${'uscite'}`;
+
+        // Costruisci i path *privati* per i dati dell'utente
+        pathIncassi = `/artifacts/${appId}/users/${userId}/incassi`;
+        pathUscite = `/artifacts/${appId}/users/${userId}/uscite`;
         
         console.log(`Utente autenticato: ${userId}`);
-        console.log(`Path database incassi: ${collectionPathIncassi}`);
-        console.log(`Path database uscite: ${collectionPathUscite}`);
+        console.log(`Path database incassi (Firestore): ${pathIncassi}`);
+        console.log(`Path database uscite (Firestore): ${pathUscite}`);
         
         // Aggiorna l'interfaccia
-        userIdDisplay.innerHTML = `ID Utente: <span class="font-mono p-1 bg-blue-700 rounded">${userId}</span>`;
+        authStatus.textContent = "Connesso. Il tuo ID Utente è:";
+        userIdEl.textContent = userId;
+        userIdEl.classList.remove('hidden');
+        submitBtn.disabled = false;
         
-        // Avvia l'ascolto dei dati e valida i form
+        // Avvia i listener per i dati
         setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
-        validateForm();
       }
 
       /**
        * 4a. Si mette in ascolto dei cambiamenti sul database (INCASSI)
+       * (MODIFICATO per Cloud Firestore)
        */
       function setupSnapshotListenerIncassi() {
-        if (!db || !collectionPathIncassi) return;
+        if (!db || !pathIncassi) return;
 
-        const q = query(collection(db, collectionPathIncassi));
+        // MODIFICATO: onSnapshot su una collection
+        const q = query(collection(db, pathIncassi)); 
 
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(q, (snapshot) => { 
           console.log("Dati (Incassi) ricevuti da Firestore.");
-          localIncassi = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+          
+          // MODIFICATO: I dati di Firestore sono in snapshot.docs
+          localIncassi = [];
+          snapshot.docs.forEach((doc) => {
+            localIncassi.push({
+              id: doc.id,
+              ...doc.data()
+            });
+          });
 
-          // Ordina i dati: dal più recente al più vecchio
-          localIncassi.sort((a, b) => b.data.localeCompare(a.data));
+          // Ri-renderizza la lista e aggiorna i totali
+          renderMovimentiList();
+          updateSummary();
 
-          buildAndRenderMovimenti(); // Aggiorna la lista combinata
-          updateSummary(); // Aggiorna il riepilogo
-          // loadingState.classList.add('hidden'); // Gestito da renderMovimentiList
         }, (error) => {
           console.error("Errore in onSnapshot (Incassi):", error);
           showError("Impossibile caricare gli incassi in tempo reale.");
@@ -439,344 +387,316 @@
 
       /**
        * 4b. Si mette in ascolto dei cambiamenti sul database (USCITE)
+       * (MODIFICATO per Cloud Firestore)
        */
       function setupSnapshotListenerUscite() {
-        if (!db || !collectionPathUscite) return;
+        if (!db || !pathUscite) return;
 
-        const q = query(collection(db, collectionPathUscite));
+        // MODIFICATO: onSnapshot su una collection
+        const q = query(collection(db, pathUscite)); 
 
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(q, (snapshot) => { 
           console.log("Dati (Uscite) ricevuti da Firestore.");
-          localUscite = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+          
+          // MODIFICATO: I dati di Firestore sono in snapshot.docs
+          localUscite = [];
+          snapshot.docs.forEach((doc) => {
+            localUscite.push({
+              id: doc.id,
+              ...doc.data()
+            });
+          });
 
-          // Ordina i dati: dal più recente al più vecchio
-          localUscite.sort((a, b) => b.data.localeCompare(a.data));
+          // Ri-renderizza la lista e aggiorna i totali
+          renderMovimentiList();
+          updateSummary();
 
-          buildAndRenderMovimenti(); // Aggiorna la lista combinata
-          updateSummary(); // Aggiorna il riepilogo
-          // loadingStateUscite.classList.add('hidden'); // Gestito da renderMovimentiList
         }, (error) => {
           console.error("Errore in onSnapshot (Uscite):", error);
           showError("Impossibile caricare le uscite in tempo reale.");
-          // loadingStateUscite.classList.add('hidden'); // Rimosso
+          loadingState.classList.add('hidden');
         });
       }
 
       /**
-       * 5. Combina, ordina e renderizza la lista unificata dei movimenti
+       * 5. Imposta i listener sul form
        */
-      function buildAndRenderMovimenti() {
-        // Mappa gli incassi
-        const mappedIncassi = localIncassi.map(incasso => ({
-          ...incasso,
-          type: 'incasso',
-          sortDate: incasso.data 
-        }));
+      function setupFormListeners() {
+        // Calcolo totale dinamico
+        const inputs = [costoInput, numInput, liberoInput];
+        inputs.forEach(input => {
+          input.addEventListener('input', updateCalcoloTotale);
+        });
         
-        // Mappa le uscite
-        const mappedUscite = localUscite.map(uscita => ({
-          ...uscita,
-          type: 'uscita',
-          sortDate: uscita.data
-        }));
-
-        // Combina e ordina per data (più recente prima)
-        localMovimenti = [...mappedIncassi, ...mappedUscite];
-        localMovimenti.sort((a, b) => b.sortDate.localeCompare(a.sortDate));
-        
-        renderMovimentiList();
+        // Gestione submit
+        incassoForm.addEventListener('submit', handleSubmit);
       }
-
-
+      
       /**
-       * 5b. Aggiorna la lista HTML con i dati (MOVIMENTI COMBINATI)
+       * 5b. Imposta il listener per il toggle del riepilogo
        */
-      function renderMovimentiList() {
-        movimentiList.innerHTML = ''; // Svuota la lista
-
-        if (localMovimenti.length === 0) {
-          emptyState.classList.remove('hidden');
-          loadingState.classList.add('hidden');
-        } else {
-          emptyState.classList.add('hidden');
-          loadingState.classList.add('hidden');
-        }
-
-        localMovimenti.forEach(movimento => {
-          const li = document.createElement('li');
-          li.className = "bg-white border border-gray-200 p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between hover:shadow-md transition-shadow duration-200";
-          
-          let innerHTML = '';
-
-          if (movimento.type === 'incasso') {
-            const costoLiberoHtml = movimento.costoLibero > 0
-              ? `<span> + ${formatCurrency(movimento.costoLibero)} extra</span>`
-              : '';
-
-            innerHTML = `
-              <div class="flex-1 mb-3 sm:mb-0">
-                <p class="text-lg font-semibold text-blue-700">${movimento.corso}</p>
-                <p class="text-sm text-gray-600">
-                  Data: <span class="font-medium">${formatDate(movimento.data)}</span>
-                </p>
-                <p class="text-sm text-gray-600">
-                  Dettagli: ${movimento.numPartecipanti} x ${formatCurrency(movimento.costoPerPartecipante)}
-                  ${costoLiberoHtml}
-                </p>
-                <p class="text-lg font-bold text-gray-800 mt-1">
-                  Totale: ${formatCurrency(movimento.totale)}
-                </p>
-              </div>
-              
-              <button class="delete-movimento-btn flex-shrink-0 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition duration-200 shadow-sm self-end sm:self-center" 
-                      aria-label="Elimina incasso" data-id="${movimento.id}" data-type="incasso">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            `;
-          } else { // type === 'uscita'
-            innerHTML = `
-              <div class="flex-1">
-                <p class="text-lg font-semibold text-red-700">${movimento.descrizione}</p>
-                <p class="text-sm text-gray-600">
-                  Data: <span class="font-medium">${formatDate(movimento.data)}</span>
-                </p>
-                <p class="text-lg font-bold text-gray-800 mt-1">
-                  -${formatCurrency(movimento.importo)}
-                </p>
-              </div>
-              
-              <button class="delete-movimento-btn flex-shrink-0 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition duration-200 shadow-sm ml-4" 
-                      aria-label="Elimina uscita" data-id="${movimento.id}" data-type="uscita">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            `;
-          }
-          
-          li.innerHTML = innerHTML;
-
-          // Aggiunge l'evento al pulsante di eliminazione unificato
-          li.querySelector('.delete-movimento-btn').addEventListener('click', (e) => {
-            const target = e.currentTarget;
-            const id = target.dataset.id;
-            const type = target.dataset.type;
-            
-            if (type === 'incasso') {
-              deleteIncasso(id);
-            } else if (type === 'uscita') {
-              deleteUscita(id);
-            }
-          });
-
-          movimentiList.appendChild(li);
+      function setupSummaryToggle() {
+        toggleSummaryBtn.addEventListener('click', () => {
+          const isHidden = summaryContent.classList.toggle('hidden');
+          toggleSummaryBtn.textContent = isHidden ? 'Mostra' : 'Nascondi';
         });
       }
 
       /**
        * 6. Gestisce il submit del form (INCASSO + USCITA OPZIONALE)
+       * (MODIFICATO per Cloud Firestore)
        */
       async function handleSubmit(event) {
         event.preventDefault(); // Impedisce il ricaricamento della pagina
-        if (!validateForm()) return; // Doppia validazione
+        if (!isAuthReady) {
+          showError("Autenticazione non ancora pronta.");
+          return;
+        }
 
-        // Disabilita il pulsante per evitare doppi invii
-        submitButton.disabled = true;
-        submitButton.textContent = "Salvataggio...";
+        // Blocca il pulsante per evitare doppi click
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Salvataggio in corso...";
 
-        // Raccoglie i dati
+        // Raccogli i dati dal form
+        const form = event.target;
         const dataIncasso = {
+          corso: form.corso.value,
+          data: form.data.value,
+          costoPerPartecipante: parseFloat(form['costo-per-partecipante'].value),
+          numPartecipanti: parseInt(form['num-partecipanti'].value),
+          costoLibero: parseFloat(form['costo-libero'].value) || 0,
           userId: userId,
-          corso: corsoInput.value,
-          data: dataInput.value,
-          costoPerPartecipante: costoInput.valueAsNumber || 0,
-          numPartecipanti: partecipantiInput.valueAsNumber || 0,
-          costoLibero: extraInput.valueAsNumber || 0,
-          totale: (costoInput.valueAsNumber || 0) * (partecipantiInput.valueAsNumber || 0) + (extraInput.valueAsNumber || 0)
         };
-        
-        const costoPersonale = costoPersonaleInput.valueAsNumber || 0;
-        
+        // Calcola il totale lato client
+        dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
+
+        const costoPersonale = parseFloat(form['costo-personale'].value) || 0;
+
         try {
           hideError();
           
-          // 1. Salva l'incasso
-          await addDoc(collection(db, collectionPathIncassi), dataIncasso);
+          // 1. Salva l'incasso (MODIFICATO: addDoc)
+          await addDoc(collection(db, pathIncassi), dataIncasso);
           console.log("Incasso salvato con successo!");
           
-          // 2. Salva l'uscita (se presente)
+          // 2. Salva l'uscita (se presente) (MODIFICATO: addDoc)
           if (costoPersonale > 0) {
             const dataUscita = {
-              userId: userId,
-              descrizione: "Costo Personale", // Descrizione fissa
+              descrizione: "Costo Personale",
               data: dataInput.value, // Stessa data dell'incasso
               importo: costoPersonale,
+              userId: userId
             };
-            await addDoc(collection(db, collectionPathUscite), dataUscita);
+            await addDoc(collection(db, pathUscite), dataUscita);
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
-          // Resetta il form (tranne data e corso)
-          costoInput.value = '';
-          partecipantiInput.value = '';
-          extraInput.value = '0';
-          costoPersonaleInput.value = '0';
-          
-          // Aggiorna i totali e ri-valida
-          updateTotalAndValidate();
+          // Reset del form
+          form.reset();
+          dataInput.valueAsDate = new Date(); // Reimposta la data a oggi
+          updateCalcoloTotale(); // Azzera il calcolo
 
         } catch (e) {
-          console.error("Errore durante il salvataggio:", e);
-          showError("Impossibile salvare i dati.");
+          console.error("Errore nel salvataggio:", e);
+          showError(`Errore nel salvataggio: ${e.message}`);
         } finally {
           // Riabilita il pulsante
-          submitButton.disabled = false;
-          submitButton.textContent = "Salva Incasso (e Uscita opz.)";
-          validateForm();
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Salva Movimento";
         }
       }
 
       /**
+       * 7. Renderizza l'intera lista dei movimenti (incassi + uscite)
+       */
+      function renderMovimentiList() {
+        movimentiList.innerHTML = ''; // Pulisce la lista
+
+        // Combina e ordina i dati
+        const tuttiMovimenti = [
+            ...localIncassi.map(i => ({ ...i, type: 'incasso' })),
+            ...localUscite.map(u => ({ ...u, type: 'uscita' }))
+        ];
+
+        // Ordina per data, dal più recente al più vecchio
+        tuttiMovimenti.sort((a, b) => b.data.localeCompare(a.data));
+
+        if (tuttiMovimenti.length === 0) {
+          emptyState.classList.remove('hidden');
+          loadingState.classList.add('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+          loadingState.classList.add('hidden');
+
+          tuttiMovimenti.forEach(movimento => {
+            const li = document.createElement('li');
+            li.className = "bg-white border border-gray-200 p-4 rounded-lg shadow-sm flex items-center justify-between";
+            
+            if (movimento.type === 'incasso') {
+                li.innerHTML = createIncassoHTML(movimento);
+                li.querySelector('button').addEventListener('click', () => deleteIncasso(movimento.id));
+            } else {
+                li.innerHTML = createUscitaHTML(movimento);
+                li.querySelector('button').addEventListener('click', () => deleteUscita(movimento.id));
+            }
+            movimentiList.appendChild(li);
+          });
+        }
+      }
+      
+      /**
        * 7a. Elimina un documento da Firestore (INCASSO)
+       * (MODIFICATO per Cloud Firestore)
        */
       async function deleteIncasso(docId) {
-        // Uso un prompt semplice, dato che confirm() può essere bloccato
-        const sic = prompt("Scrivi 'SI' per confermare l'eliminazione di questo incasso:");
+        // Usa un prompt sincrono semplice per la conferma
+        // NOTA: in un'app reale, usare un modal custom
+        const sic = prompt("Sei sicuro di voler eliminare questo incasso? Scrivi 'SI' per confermare.");
         if (sic !== 'SI') return;
 
         try {
           hideError();
-          await deleteDoc(doc(db, collectionPathIncassi, docId));
+          const docRef = doc(db, pathIncassi, docId); // MODIFICATO
+          await deleteDoc(docRef); // MODIFICATO
           console.log("Documento (Incasso) eliminato:", docId);
         } catch (e) {
-          console.error("Errore durante l'eliminazione (Incasso):", e);
-          showError("Impossibile eliminare l'incasso.");
+          console.error("Errore eliminazione incasso:", e);
+          showError(`Errore eliminazione incasso: ${e.message}`);
         }
-        // La lista si aggiornerà automaticamente grazie a onSnapshot
       }
       
       /**
        * 7b. Elimina un documento da Firestore (USCITA)
+       * (MODIFICATO per Cloud Firestore)
        */
       async function deleteUscita(docId) {
-        const sic = prompt("Scrivi 'SI' per confermare l'eliminazione di questa uscita:");
+        const sic = prompt("Sei sicuro di voler eliminare questa uscita? Scrivi 'SI' per confermare.");
         if (sic !== 'SI') return;
 
         try {
           hideError();
-          await deleteDoc(doc(db, collectionPathUscite, docId));
+          const docRef = doc(db, pathUscite, docId); // MODIFICATO
+          await deleteDoc(docRef); // MODIFICATO
           console.log("Documento (Uscita) eliminato:", docId);
         } catch (e) {
-          console.error("Errore durante l'eliminazione (Uscita):", e);
-          showError("Impossibile eliminare l'uscita.");
+          console.error("Errore eliminazione uscita:", e);
+          showError(`Errore eliminazione uscita: ${e.message}`);
         }
-        // La lista si aggiornerà automaticamente grazie a onSnapshot
       }
 
       /**
-       * 8. Calcola il totale e valida il form (solo per incasso)
-       */
-      function updateTotalAndValidate() {
-        // Calcola
-        const costo = costoInput.valueAsNumber || 0;
-        const num = partecipantiInput.valueAsNumber || 0;
-        const extra = extraInput.valueAsNumber || 0;
-        
-        const costoBase = costo * num;
-        const totale = costoBase + extra;
-        
-        // Aggiorna display
-        displayCostoBase.textContent = formatCurrency(costoBase);
-        displayCostoExtra.textContent = formatCurrency(extra);
-        displayTotale.textContent = formatCurrency(totale);
-        
-        // Valida
-        validateForm();
-      }
-
-      /**
-       * 9. Valida il form e abilita/disabilita il pulsante
-       */
-      function validateForm() {
-        const costo = costoInput.valueAsNumber;
-        const num = partecipantiInput.valueAsNumber;
-
-        // La validazione si basa solo sui campi incasso
-        const isValid = 
-          isAuthReady &&
-          corsoInput.value &&
-          dataInput.value &&
-          costo !== null && costo >= 0 &&
-          num !== null && num > 0;
-          
-        submitButton.disabled = !isValid;
-        
-        return isValid;
-      }
-      
-      /**
-       * 10. Aggiorna il riepilogo finanziario
+       * 8. Aggiorna il riepilogo finanziario
        */
       function updateSummary() {
-        const totIncassi = localIncassi.reduce((acc, curr) => acc + curr.totale, 0);
-        const totUscite = localUscite.reduce((acc, curr) => acc + curr.importo, 0);
-        const saldo = totIncassi - totUscite;
+          const totaleIncassi = localIncassi.reduce((sum, item) => sum + item.totale, 0);
+          const totaleUscite = localUscite.reduce((sum, item) => sum + item.importo, 0);
+          const saldo = totaleIncassi - totaleUscite;
 
-        displayTotaleIncassi.textContent = formatCurrency(totIncassi);
-        displayTotaleUscite.textContent = formatCurrency(totUscite);
-        displaySaldoAttuale.textContent = formatCurrency(saldo);
-
-        // Cambia colore del saldo se negativo
-        if (saldo < 0) {
-          displaySaldoAttuale.classList.remove('text-blue-700', 'text-green-600');
-          displaySaldoAttuale.classList.add('text-red-600');
-        } else if (saldo > 0) {
-          displaySaldoAttuale.classList.remove('text-blue-700', 'text-red-600');
-          displaySaldoAttuale.classList.add('text-green-600');
-        } else {
-          displaySaldoAttuale.classList.remove('text-green-600', 'text-red-600');
-          displaySaldoAttuale.classList.add('text-blue-700');
-        }
+          totalIncassiEl.textContent = formatCurrency(totaleIncassi);
+          totalUsciteEl.textContent = formatCurrency(totaleUscite);
+          totalSaldoEl.textContent = formatCurrency(saldo);
       }
 
-      // --- Avvio dell'applicazione ---
+      /**
+       * 9. Aggiorna il calcolo del totale nel form
+       */
+      function updateCalcoloTotale() {
+        const costo = parseFloat(costoInput.value) || 0;
+        const num = parseInt(numInput.value) || 0;
+        const libero = parseFloat(liberoInput.value) || 0;
+        const totale = (costo * num) + libero;
+        calcoloTotale.textContent = formatCurrency(totale);
+      }
+
+      // --- Funzioni di Utility ---
+
+      /**
+       * Mostra un messaggio di errore
+       */
+      function showError(message) {
+        errorText.textContent = message;
+        errorMessage.classList.remove('hidden');
+      }
+
+      /**
+       * Nasconde il messaggio di errore
+       */
+      function hideError() {
+        errorMessage.classList.add('hidden');
+        errorText.textContent = '';
+      }
+
+      /**
+       * Formatta un numero come valuta
+       */
+      function formatCurrency(value) {
+        return new Intl.NumberFormat('it-IT', {
+          style: 'currency',
+          currency: 'EUR'
+        }).format(value);
+      }
+
+      /**
+       * Formatta la data (YYYY-MM-DD) in un formato leggibile (DD/MM/YYYY)
+       */
+      function formatDate(dateString) {
+          try {
+              const [year, month, day] = dateString.split('-');
+              return `${day}/${month}/${year}`;
+          } catch (e) {
+              return dateString; // Fallback
+          }
+      }
       
-      // Assicura che il DOM sia caricato prima di eseguire lo script
-      document.addEventListener('DOMContentLoaded', () => {
-        // Imposta la data di oggi come default
-        dataInput.value = getTodayDateString();
-        
-        // Aggiunge gli eventi per il calcolo live (Incassi)
-        [costoInput, partecipantiInput, extraInput].forEach(input => {
-          input.addEventListener('input', updateTotalAndValidate);
-        });
-        
-        // Aggiunge gli eventi per la validazione live (Incassi)
-        [corsoInput, dataInput, costoInput, partecipantiInput].forEach(input => {
-        input.addEventListener('input', validateForm);
-      });
-
-      // Collega il pulsante del riepilogo
-      toggleRiepilogoBtn.addEventListener('click', () => {
-        const isHidden = riepilogoContent.classList.toggle('hidden');
-        toggleRiepilogoBtn.textContent = isHidden ? 'Mostra' : 'Nascondi';
-      });
-
-      // Collega il submit del form
-      form.addEventListener('submit', handleSubmit);
-
-        // Avvia la validazione iniziale
-        updateTotalAndValidate();
-        
-        // Avvia Firebase
-        initializeFirebase();
-      });
+      /**
+       * Crea l'HTML per un item "Incasso"
+       */
+      function createIncassoHTML(incasso) {
+          return `
+              <div class="flex-1">
+                  <p class="text-sm text-gray-500">${formatDate(incasso.data)}</p>
+                  <p class="text-lg font-semibold text-green-700">
+                      + ${formatCurrency(incasso.totale)} (Incasso)
+                  </p>
+                  <p class="text-sm text-gray-700 font-medium">
+                      ${incasso.corso}
+                  </p>
+                  <p class="text-xs text-gray-500">
+                      Dettagli: ${incasso.numPartecipanti} x ${formatCurrency(incasso.costoPerPartecipante)}
+                      ${incasso.costoLibero > 0 ? ` + ${formatCurrency(incasso.costoLibero)} extra` : ''}
+                  </p>
+              </div>
+              <button class="flex-shrink-0 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition duration-200 shadow-sm" aria-label="Elimina incasso">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+          `;
+      }
+      
+      /**
+       * Crea l'HTML per un item "Uscita"
+       */
+      function createUscitaHTML(uscita) {
+          return `
+              <div class="flex-1">
+                  <p class="text-sm text-gray-500">${formatDate(uscita.data)}</p>
+                  <p class="text-lg font-semibold text-red-700">
+                      - ${formatCurrency(uscita.importo)} (Uscita)
+                  </p>
+                  <p class="text-sm text-gray-700 font-medium">
+                      ${uscita.descrizione}
+                  </p>
+              </div>
+              <button class="flex-shrink-0 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition duration-200 shadow-sm" aria-label="Elimina uscita">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+          `;
+      }
 
     </script>
+
 </body>
 </html>

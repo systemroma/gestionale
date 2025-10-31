@@ -74,32 +74,6 @@
             </button>
         </header>
 
-        <!-- Riepilogo Finanziario a Scomparsa -->
-        <div class="bg-white p-4 rounded-lg shadow-md mb-6">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
-                <button id="toggle-summary-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    Mostra
-                </button>
-            </div>
-            
-            <!-- Contenuto del Riepilogo (Nascosto di default) -->
-            <div id="summary-content" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Incassi</p>
-                    <p id="total-incassi" class="text-3xl font-bold text-green-600">€0.00</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Uscite</p>
-                    <p id="total-uscite" class="text-3xl font-bold text-red-600">€0.00</p>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500 uppercase">Saldo Attuale</p>
-                    <p id="total-saldo" class="text-3xl font-bold text-blue-700">€0.00</p>
-                </div>
-            </div>
-        </div>
-
         <!-- Contenuto Principale: Form + Lista -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -189,28 +163,82 @@
 
             <!-- Colonna 2: Lista dei Movimenti (Incassi + Uscite) -->
             <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
-                    Movimenti Registrati
-                </h2>
                 
-                <!-- Stato di Caricamento -->
-                <div id="loading-state" class="text-center p-10 text-gray-600">
-                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
-                    <p>Caricamento movimenti dal database...</p>
+                <!-- Intestazione Lista Movimenti (NUOVA) -->
+                <div class="flex justify-between items-center mb-5 border-b pb-2">
+                    <h2 class="text-2xl font-semibold text-gray-800">
+                        Movimenti Registrati
+                    </h2>
+                    <button id="toggle-movimenti-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition text-sm">
+                        Nascondi
+                    </button>
                 </div>
-                
-                <!-- Stato Vuoto -->
-                <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
-                    <p class="text-gray-600">Nessun movimento ancora registrato.</p>
-                    <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
+
+                <!-- Contenuto Lista Movimenti (Wrapper per nascondere) -->
+                <div id="movimenti-content">
+                    <!-- Stato di Caricamento -->
+                    <div id="loading-state" class="text-center p-10 text-gray-600">
+                        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
+                        <p>Caricamento movimenti dal database...</p>
+                    </div>
+                    
+                    <!-- Stato Vuoto -->
+                    <div id="empty-state" class="text-center p-10 bg-gray-50 rounded-lg hidden">
+                        <p class="text-gray-600">Nessun movimento ancora registrato.</p>
+                        <p class="text-sm text-gray-500 mt-1">Compila il modulo a sinistra per iniziare.</p>
+                    </div>
+                    
+                    <!-- Lista Movimenti -->
+                    <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
+                        <!-- Gli elementi (incassi e uscite) verranno aggiunti qui da JS -->
+                    </ul>
                 </div>
-                
-                <!-- Lista Movimenti -->
-                <ul id="movimenti-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-                    <!-- Gli elementi (incassi e uscite) verranno aggiunti qui da JS -->
-                </ul>
+
             </div>
 
+        </div>
+
+        <!-- Riepilogo Finanziario a Scomparsa (SPOSTATO QUI IN FONDO) -->
+        <div class="bg-white p-4 rounded-lg shadow-md mt-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
+                <button id="toggle-summary-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                    Mostra
+                </button>
+            </div>
+            
+            <!-- Contenuto del Riepilogo (Nascosto di default) -->
+            <div id="summary-content" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Incassi</p>
+                    <p id="total-incassi" class="text-3xl font-bold text-green-600">€0.00</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Totale Uscite</p>
+                    <p id="total-uscite" class="text-3xl font-bold text-red-600">€0.00</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase">Saldo Attuale</p>
+                    <p id="total-saldo" class="text-3xl font-bold text-blue-700">€0.00</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modale di Conferma Cancellazione (NUOVO) -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 class="text-lg font-semibold mb-4">Sei sicuro?</h3>
+            <p class="text-gray-700 mb-6" id="custom-confirm-text">Vuoi davvero eliminare questo elemento?</p>
+            <div class="flex justify-end space-x-4">
+                <button id="custom-confirm-no" class="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition">
+                    No, annulla
+                </button>
+                <button id="custom-confirm-yes" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                    Sì, elimina
+                </button>
+            </div>
         </div>
     </div>
 
@@ -224,9 +252,8 @@
       import { 
         getAuth, 
         onAuthStateChanged,
-        // RIMOSSO: createUserWithEmailAndPassword (non c'è registrazione)
-        signInWithEmailAndPassword,     // Per il Login
-        signOut                         // Per il Logout
+        signInWithEmailAndPassword,
+        signOut
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
       import { 
         getFirestore,
@@ -240,9 +267,8 @@
 
       // --- Variabili Globali ---
       
-      // La variabile `firebaseConfig` ora è caricata dal file esterno `firebase-config.js`
-      
-      // Controllo per assicurarsi che il file sia stato caricato
+      // La variabile `firebaseConfig` ora è caricata da `firebase-config.js`
+      // @ts-ignore
       if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
         const errorMsg = "ERRORE: `firebaseConfig` non trovato o non valido. Assicurati che `firebase-config.js` sia presente, salvato, e contenga la tua vera configurazione Firebase.";
         console.error(errorMsg);
@@ -250,22 +276,20 @@
         throw new Error(errorMsg);
       }
       
+      // @ts-ignore
       const appId = firebaseConfig.projectId || 'default-app-id';
       
-      // ----------------------------------------------------
-
-      // Variabili di stato globali
+      // --- Variabili di Stato ---
       let db, auth, userId, isAuthReady = false;
       let pathIncassi = ''; 
       let localIncassi = []; 
       let pathUscite = ''; 
       let localUscite = [];
-      
-      // Listener di Firestore (per staccarli al logout)
       let unsubscribeIncassi = () => {};
       let unsubscribeUscite = () => {};
+      let deleteCallback = null; // Funzione da chiamare alla conferma di eliminazione
 
-      // Elementi DOM (App)
+      // --- Elementi DOM (App) ---
       const appContainer = document.getElementById('app-container');
       const authStatus = document.getElementById('auth-status');
       const logoutBtn = document.getElementById('logout-btn');
@@ -275,14 +299,13 @@
       const loadingState = document.getElementById('loading-state');
       const emptyState = document.getElementById('empty-state');
       
-      // Elementi DOM (Auth)
+      // --- Elementi DOM (Auth) ---
       const loginContainer = document.getElementById('login-container');
       const loginForm = document.getElementById('login-form');
-      // RIMOSSO: registerForm
       const authErrorMessage = document.getElementById('auth-error-message');
       const authErrorText = document.getElementById('auth-error-text');
 
-      // Elementi Form (App)
+      // --- Elementi DOM (Form App) ---
       const dataInput = document.getElementById('data');
       const costoInput = document.getElementById('costo-per-partecipante');
       const numInput = document.getElementById('num-partecipanti');
@@ -290,28 +313,37 @@
       const costoPersonaleInput = document.getElementById('costo-personale');
       const calcoloTotale = document.getElementById('calcolo-totale');
       
-      // Elementi Riepilogo (App)
+      // --- Elementi DOM (Riepiloghi) ---
       const toggleSummaryBtn = document.getElementById('toggle-summary-btn');
       const summaryContent = document.getElementById('summary-content');
       const totalIncassiEl = document.getElementById('total-incassi');
       const totalUsciteEl = document.getElementById('total-uscite');
       const totalSaldoEl = document.getElementById('total-saldo');
+      const toggleMovimentiBtn = document.getElementById('toggle-movimenti-btn'); // NUOVO
+      const movimentiContent = document.getElementById('movimenti-content'); // NUOVO
       
-      // Elementi Errore (App)
+      // --- Elementi DOM (Errori App) ---
       const errorMessage = document.getElementById('error-message');
       const errorText = document.getElementById('error-text');
+
+      // --- Elementi DOM (Modale Conferma) (NUOVO) ---
+      const customConfirmModal = document.getElementById('custom-confirm-modal');
+      const customConfirmYes = document.getElementById('custom-confirm-yes');
+      const customConfirmNo = document.getElementById('custom-confirm-no');
+      const customConfirmText = document.getElementById('custom-confirm-text');
 
       /**
        * Inizializza l'applicazione al caricamento della pagina
        */
       document.addEventListener('DOMContentLoaded', () => {
         initializeFirebase();
-        setupFormListeners(); // Listener per il form dell'app
-        setupAuthForms(); // Listener per login/logout
-        setupSummaryToggle();
+        setupFormListeners(); 
+        setupAuthForms(); 
+        setupToggleListeners(); // Unito i listener per i toggle
+        setupModalListeners(); // NUOVO: Listener per il modale
         
-        // Imposta la data di oggi come default
-        (dataInput).valueAsDate = new Date();
+        // @ts-ignore
+        dataInput.valueAsDate = new Date();
       });
 
       /**
@@ -320,11 +352,12 @@
       function initializeFirebase() {
         setLogLevel('Debug');
         try {
+          // @ts-ignore
           const app = initializeApp(firebaseConfig);
           db = getFirestore(app); 
           auth = getAuth(app);
           console.log("Firebase (Cloud Firestore) inizializzato correttamente.");
-          setupAuthListener(); // Avvia il listener principale
+          setupAuthListener(); 
         } catch (e) {
           console.error("Errore inizializzazione Firebase:", e);
           showAuthError(`Errore inizializzazione Firebase: ${e.message}`);
@@ -332,11 +365,10 @@
       }
 
       /**
-       * 2. Imposta il listener per lo stato di autenticazione (cuore dell'app)
+       * 2. Imposta il listener per lo stato di autenticazione
        */
       function setupAuthListener() {
         onAuthStateChanged(auth, (user) => {
-          // Stacca i vecchi listener prima di fare qualsiasi cosa
           unsubscribeIncassi();
           unsubscribeUscite();
 
@@ -354,8 +386,6 @@
             isAuthReady = false;
             appContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
-            
-            // Pulisci i dati vecchi
             localIncassi = [];
             localUscite = [];
             renderMovimentiList();
@@ -369,7 +399,6 @@
        * 3. Imposta i listener per i form di login e logout
        */
       function setupAuthForms() {
-        // RIMOSSO: registerForm.addEventListener
         loginForm.addEventListener('submit', handleLogin);
         logoutBtn.addEventListener('click', handleLogout);
       }
@@ -380,12 +409,13 @@
       async function handleLogin(e) {
         e.preventDefault();
         hideAuthError();
-        const email = (e.target).email.value;
-        const password = (e.target).password.value;
+        // @ts-ignore
+        const email = e.target.email.value;
+        // @ts-ignore
+        const password = e.target.password.value;
 
         try {
           await signInWithEmailAndPassword(auth, email, password);
-          // onAuthStateChanged si occuperà del resto
         } catch (error) {
           console.error("Errore login:", error.code);
           showAuthError(getFriendlyAuthError(error.code));
@@ -398,7 +428,7 @@
       function handleLogout() {
         signOut(auth).catch(error => {
           console.error("Errore logout:", error);
-          showError("Errore durante il logout."); // Mostra errore nell'app
+          showError("Errore durante il logout.");
         });
       }
 
@@ -408,18 +438,13 @@
       function onUserAuthenticated(user) {
         userId = user.uid;
         isAuthReady = true;
-
-        // Path standard per i dati privati dell'utente
         pathIncassi = `users/${userId}/incassi`;
         pathUscite = `users/${userId}/uscite`;
-        
         console.log(`Path database incassi (Firestore): ${pathIncassi}`);
         console.log(`Path database uscite (Firestore): ${pathUscite}`);
-        
         authStatus.textContent = `Connesso come: ${user.email}`;
-        (submitBtn).disabled = false;
-        
-        // Avvia i listener per i dati
+        // @ts-ignore
+        submitBtn.disabled = false;
         setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
       }
@@ -430,8 +455,6 @@
       function setupSnapshotListenerIncassi() {
         if (!db || !pathIncassi) return;
         const q = query(collection(db, pathIncassi)); 
-
-        // Salva la funzione di unsubscribe per staccarla al logout
         unsubscribeIncassi = onSnapshot(q, (snapshot) => { 
           console.log("Dati (Incassi) ricevuti da Firestore.");
           localIncassi = [];
@@ -453,8 +476,6 @@
       function setupSnapshotListenerUscite() {
         if (!db || !pathUscite) return;
         const q = query(collection(db, pathUscite)); 
-
-        // Salva la funzione di unsubscribe
         unsubscribeUscite = onSnapshot(q, (snapshot) => { 
           console.log("Dati (Uscite) ricevuti da Firestore.");
           localUscite = [];
@@ -482,13 +503,33 @@
       }
       
       /**
-       * 6b. Imposta il listener per il toggle del riepilogo
+       * 6b. Imposta i listener per i toggle (Riepilogo e Movimenti)
        */
-      function setupSummaryToggle() {
+      function setupToggleListeners() {
+        // Listener per il Riepilogo
         toggleSummaryBtn.addEventListener('click', () => {
           const isHidden = summaryContent.classList.toggle('hidden');
           toggleSummaryBtn.textContent = isHidden ? 'Mostra' : 'Nascondi';
         });
+
+        // Listener per i Movimenti (NUOVO)
+        toggleMovimentiBtn.addEventListener('click', () => {
+          const isHidden = movimentiContent.classList.toggle('hidden');
+          toggleMovimentiBtn.textContent = isHidden ? 'Mostra' : 'Nascondi';
+        });
+      }
+
+      /**
+       * 6c. Imposta i listener per il modale di conferma (NUOVO)
+       */
+      function setupModalListeners() {
+          customConfirmNo.addEventListener('click', hideCustomConfirm);
+          customConfirmYes.addEventListener('click', () => {
+             if (deleteCallback) {
+                 deleteCallback(); // Esegue la funzione di eliminazione
+             }
+             hideCustomConfirm();
+          });
       }
 
       /**
@@ -501,22 +542,29 @@
           return;
         }
 
-        (submitBtn).disabled = true;
+        // @ts-ignore
+        submitBtn.disabled = true;
         submitBtn.textContent = "Salvataggio in corso...";
 
         const form = event.target;
         const dataIncasso = {
-          corso: (form).corso.value,
-          data: (form).data.value,
-          costoPerPartecipante: parseFloat((form)['costo-per-partecipante'].value),
-          numPartecipanti: parseInt((form)['num-partecipanti'].value),
-          costoLibero: parseFloat((form)['costo-libero'].value) || 0,
-          userId: userId, // Associa l'incasso all'utente
+          // @ts-ignore
+          corso: form.corso.value,
+          // @ts-ignore
+          data: form.data.value,
+          // @ts-ignore
+          costoPerPartecipante: parseFloat(form['costo-per-partecipante'].value),
+          // @ts-ignore
+          numPartecipanti: parseInt(form['num-partecipanti'].value),
+          // @ts-ignore
+          costoLibero: parseFloat(form['costo-libero'].value) || 0,
+          userId: userId,
           totale: 0 
         };
         dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
-
-        const costoPersonale = parseFloat((form)['costo-personale'].value) || 0;
+        
+        // @ts-ignore
+        const costoPersonale = parseFloat(form['costo-personale'].value) || 0;
 
         try {
           hideError();
@@ -526,23 +574,27 @@
           if (costoPersonale > 0) {
             const dataUscita = {
               descrizione: "Costo Personale",
-              data: (dataInput).value, 
+              // @ts-ignore
+              data: dataInput.value, 
               importo: costoPersonale,
-              userId: userId // Associa l'uscita all'utente
+              userId: userId 
             };
             await addDoc(collection(db, pathUscite), dataUscita);
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
-          (form).reset();
-          (dataInput).valueAsDate = new Date(); 
+          // @ts-ignore
+          form.reset();
+          // @ts-ignore
+          dataInput.valueAsDate = new Date(); 
           updateCalcoloTotale(); 
 
         } catch (e) {
           console.error("Errore nel salvataggio:", e);
           showError(`Errore nel salvataggio: ${e.message}`);
         } finally {
-          (submitBtn).disabled = false;
+          // @ts-ignore
+          submitBtn.disabled = false;
           submitBtn.textContent = "Salva Movimento";
         }
       }
@@ -573,9 +625,11 @@
             
             if (movimento.type === 'incasso') {
                 li.innerHTML = createIncassoHTML(movimento);
+                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteIncasso(movimento.id));
             } else {
                 li.innerHTML = createUscitaHTML(movimento);
+                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteUscita(movimento.id));
             }
             movimentiList.appendChild(li);
@@ -584,39 +638,37 @@
       }
       
       /**
-       * 7a. Elimina un documento da Firestore (INCASSO)
+       * 7a. Avvia l'eliminazione di un INCASSO (NUOVO: usa modale)
        */
-      async function deleteIncasso(docId) {
-        const sic = prompt("Sei sicuro di voler eliminare questo incasso? Scrivi 'SI' per confermare.");
-        if (sic !== 'SI') return;
-
-        try {
-          hideError();
-          const docRef = doc(db, pathIncassi, docId); 
-          await deleteDoc(docRef); 
-          console.log("Documento (Incasso) eliminato:", docId);
-        } catch (e) {
-          console.error("Errore eliminazione incasso:", e);
-          showError(`Errore eliminazione incasso: ${e.message}`);
-        }
+      function deleteIncasso(docId) {
+        showCustomConfirm("Sei sicuro di voler eliminare questo incasso?", async () => {
+            try {
+              hideError();
+              const docRef = doc(db, pathIncassi, docId); 
+              await deleteDoc(docRef); 
+              console.log("Documento (Incasso) eliminato:", docId);
+            } catch (e) {
+              console.error("Errore eliminazione incasso:", e);
+              showError(`Errore eliminazione incasso: ${e.message}`);
+            }
+        });
       }
       
       /**
-       * 7b. Elimina un documento da Firestore (USCITA)
+       * 7b. Avvia l'eliminazione di una USCITA (NUOVO: usa modale)
        */
-      async function deleteUscita(docId) {
-        const sic = prompt("Sei sicuro di voler eliminare questa uscita? Scrivi 'SI' per confermare.");
-        if (sic !== 'SI') return;
-
-        try {
-          hideError();
-          const docRef = doc(db, pathUscite, docId); 
-          await deleteDoc(docRef); 
-          console.log("Documento (Uscita) eliminato:", docId);
-        } catch (e) {
-          console.error("Errore eliminazione uscita:", e);
-          showError(`Errore eliminazione uscita: ${e.message}`);
-        }
+      function deleteUscita(docId) {
+        showCustomConfirm("Sei sicuro di voler eliminare questa uscita?", async () => {
+            try {
+              hideError();
+              const docRef = doc(db, pathUscite, docId); 
+              await deleteDoc(docRef); 
+              console.log("Documento (Uscita) eliminato:", docId);
+            } catch (e) {
+              console.error("Errore eliminazione uscita:", e);
+              showError(`Errore eliminazione uscita: ${e.message}`);
+            }
+        });
       }
 
       /**
@@ -636,11 +688,27 @@
        * 9. Aggiorna il calcolo del totale nel form
        */
       function updateCalcoloTotale() {
-        const costo = parseFloat((costoInput).value) || 0;
-        const num = parseInt((numInput).value) || 0;
-        const libero = parseFloat((liberoInput).value) || 0;
+        // @ts-ignore
+        const costo = parseFloat(costoInput.value) || 0;
+        // @ts-ignore
+        const num = parseInt(numInput.value) || 0;
+        // @ts-ignore
+        const libero = parseFloat(liberoInput.value) || 0;
         const totale = (costo * num) + libero;
         calcoloTotale.textContent = formatCurrency(totale);
+      }
+
+      // --- Funzioni di Utility (Modale NUOVO) ---
+
+      function showCustomConfirm(message, callback) {
+          customConfirmText.textContent = message;
+          deleteCallback = callback; // Salva la funzione di eliminazione
+          customConfirmModal.classList.remove('hidden');
+      }
+      
+      function hideCustomConfirm() {
+          customConfirmModal.classList.add('hidden');
+          deleteCallback = null;
       }
 
       // --- Funzioni di Utility (Errori) ---
@@ -669,8 +737,10 @@
             return "Password errata. Riprova.";
           case 'auth/invalid-email':
             return "Formato email non valido.";
+          case 'auth/invalid-credential':
+             return "Credenziali non valide. Controlla email e password.";
           default:
-            return `Errore sconosciuto: ${code}`;
+            return `Errore: ${code}`;
         }
       }
 
@@ -687,7 +757,7 @@
               const [year, month, day] = dateString.split('-');
               return `${day}/${month}/${year}`;
           } catch (e) {
-              return dateString; // Fallback
+              return dateString;
           }
       }
       

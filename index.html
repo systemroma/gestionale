@@ -38,8 +38,8 @@
           </p>
         </header>
 
-        <!-- Riepilogo Finanziario -->
-        <section class="p-6 bg-gray-50 border-b border-gray-200">
+        <!-- Riepilogo Finanziario (nascosto di default) -->
+        <section id="riepilogo-finanziario" class="p-6 bg-gray-50 border-b border-gray-200 hidden">
           <h2 class="text-xl font-semibold text-gray-800 mb-4">Riepilogo Finanziario</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Totale Incassi -->
@@ -170,6 +170,11 @@
 
           <!-- Colonna 2: Lista degli incassi registrati -->
           <div class="lg:col-span-1">
+            <!-- Pulsante Mostra Riepilogo -->
+            <button id="toggle-riepilogo-btn" class="mb-4 w-full bg-gray-200 text-gray-800 p-2 rounded-md font-semibold hover:bg-gray-300 transition duration-200 shadow-sm">
+              Mostra/Nascondi Riepilogo
+            </button>
+            
             <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
               Incassi Registrati
             </h2>
@@ -284,6 +289,8 @@
       const emptyStateUscite = document.getElementById('empty-state-uscite');
 
       // Riferimenti DOM (Riepilogo)
+      const riepilogoFinanziario = document.getElementById('riepilogo-finanziario');
+      const toggleRiepilogoBtn = document.getElementById('toggle-riepilogo-btn');
       const displayTotaleIncassi = document.getElementById('display-totale-incassi');
       const displayTotaleUscite = document.getElementById('display-totale-uscite');
       const displaySaldoAttuale = document.getElementById('display-saldo-attuale');
@@ -753,11 +760,16 @@
         
         // Aggiunge gli eventi per la validazione live (Incassi)
         [corsoInput, dataInput, costoInput, partecipantiInput].forEach(input => {
-          input.addEventListener('input', validateForm);
-        });
+        input.addEventListener('input', validateForm);
+      });
 
-        // Collega il submit del form
-        form.addEventListener('submit', handleSubmit);
+      // Collega il pulsante del riepilogo
+      toggleRiepilogoBtn.addEventListener('click', () => {
+        riepilogoFinanziario.classList.toggle('hidden');
+      });
+
+      // Collega il submit del form
+      form.addEventListener('submit', handleSubmit);
 
         // Avvia la validazione iniziale
         updateTotalAndValidate();

@@ -212,19 +212,20 @@
       // Se usi Git, aggiungi il nome di questo file (es. "index.html") 
       // al tuo file .gitignore
       //
-const firebaseConfig = {
-  apiKey: "AIzaSyBWFtdnFZ98qYWRV4QEfvapSlzDktrzNUk",
-  authDomain: "gestionale-2b7b4.firebaseapp.com",
-  projectId: "gestionale-2b7b4",
-  storageBucket: "gestionale-2b7b4.firebasestorage.app",
-  messagingSenderId: "468705284783",
-  appId: "1:468705284783:web:5058b242b3127f000a7a5a"
-};
+      const firebaseConfig = {
+        apiKey: "AIza...",
+        authDomain: "tuo-progetto.firebaseapp.com",
+        projectId: "tuo-progetto",
+        storageBucket: "tuo-progetto.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:..."
+      };
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       
       
       // Controllo per assicurarsi che la config sia stata incollata
-      if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === "AIza...") {
+      // MODIFICATO: Controllo su projectId invece di apiKey, perché apiKey può iniziare con "AIza"
+      if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "tuo-progetto") {
         const errorMsg = "ERRORE: `firebaseConfig` non è stata incollata. Apri il file .html (o index.html), scorri fino in fondo allo script e sostituisci il segnaposto con la tua vera configurazione Firebase.";
         console.error(errorMsg);
         document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;

@@ -38,10 +38,15 @@
           </p>
         </header>
 
-        <!-- Riepilogo Finanziario (ora visibile) -->
-        <section id="riepilogo-finanziario" class="p-6 bg-gray-50 border-b border-gray-200">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4">Riepilogo Finanziario</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Riepilogo Finanziario (ora a scomparsa) -->
+        <section class="p-6 bg-gray-50 border-b border-gray-200">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
+            <button id="toggle-riepilogo-btn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-300">
+              Mostra
+            </button>
+          </div>
+          <div id="riepilogo-content" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
             <!-- Totale Incassi -->
             <div class="bg-white p-4 rounded-lg shadow-sm border border-green-200">
               <p class="text-sm font-medium text-gray-500">Totale Incassi</p>
@@ -265,8 +270,8 @@
       // const emptyStateUscite = document.getElementById('empty-state-uscite'); // Rimosso
 
       // Riferimenti DOM (Riepilogo)
-      // const riepilogoFinanziario = document.getElementById('riepilogo-finanziario'); // Non più necessario per JS
-      // const toggleRiepilogoBtn = document.getElementById('toggle-riepilogo-btn'); // Rimosso
+      const riepilogoContent = document.getElementById('riepilogo-content');
+      const toggleRiepilogoBtn = document.getElementById('toggle-riepilogo-btn');
       const displayTotaleIncassi = document.getElementById('display-totale-incassi');
       const displayTotaleUscite = document.getElementById('display-totale-uscite');
       const displaySaldoAttuale = document.getElementById('display-saldo-attuale');
@@ -756,10 +761,11 @@
         input.addEventListener('input', validateForm);
       });
 
-      // Collega il pulsante del riepilogo (RIMOSSO)
-      // toggleRiepilogoBtn.addEventListener('click', () => {
-      //   riepilogoFinanziario.classList.toggle('hidden');
-      // });
+      // Collega il pulsante del riepilogo
+      toggleRiepilogoBtn.addEventListener('click', () => {
+        const isHidden = riepilogoContent.classList.toggle('hidden');
+        toggleRiepilogoBtn.textContent = isHidden ? 'Mostra' : 'Nascondi';
+      });
 
       // Collega il submit del form
       form.addEventListener('submit', handleSubmit);

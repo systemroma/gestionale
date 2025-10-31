@@ -176,8 +176,6 @@
         </div>
     </div>
 
-    <!-- Il <script src="firebase-config.js"></script> è stato RIMOSSO -->
-
     <!-- Script per Firebase e logica dell'app -->
     <script type="module">
       // Import necessari da Firebase
@@ -206,32 +204,32 @@
       // (La trovi nelle Impostazioni Progetto -> Le tue app -> Icona </>)
       //
       // ATTENZIONE ALLA SICUREZZA:
-      // Ora che la configurazione è di nuovo in questo file,
-      // NON AGGIUNGERE QUESTO FILE a un repository Git pubblico,
-      // altrimenti le tue chiavi segrete saranno esposte.
       // Se usi Git, aggiungi il nome di questo file (es. "index.html") 
       // al tuo file .gitignore
       //
-     const firebaseConfig = {
-      apiKey: "AIzaSyBWFtdnFZ98qYWRV4QEfvapSlzDktrzNUk",
-      authDomain: "gestionale-2b7b4.firebaseapp.com",
-      projectId: "gestionale-2b7b4",
-      storageBucket: "gestionale-2b7b4.firebasestorage.app",
-      messagingSenderId: "468705284783",
-      appId: "1:468705284783:web:5058b242b3127f000a7a5a"
+const firebaseConfig = {
 
-    };
+  apiKey: "AIzaSyBWFtdnFZ98qYWRV4QEfvapSlzDktrzNUk",
+
+  authDomain: "gestionale-2b7b4.firebaseapp.com",
+
+  projectId: "gestionale-2b7b4",
+
+  storageBucket: "gestionale-2b7b4.firebasestorage.app",
+
+  messagingSenderId: "468705284783",
+
+  appId: "1:468705284783:web:5058b242b3127f000a7a5a"
+
+};
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       
       
-      // Controllo per assicurarsi che la config sia stata incollata
-      // MODIFICATO: Controllo su projectId invece di apiKey, perché apiKey può iniziare con "AIza"
-      if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "tuo-progetto") {
-        const errorMsg = "ERRORE: `firebaseConfig` non è stata incollata. Apri il file .html (o index.html), scorri fino in fondo allo script e sostituisci il segnaposto con la tua vera configurazione Firebase.";
-        console.error(errorMsg);
-        document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
-        throw new Error(errorMsg);
-      }
+      // --- BLOCCO DI CONTROLLO ERRORE RIMOSSO ---
+      // Ho rimosso il controllo che ti dava il falso errore.
+      // Se la configurazione qui sopra è sbagliata, 
+      // vedrai un errore reale di Firebase nella console (F12).
+      
       
       const appId = firebaseConfig.projectId || 'default-app-id';
       
@@ -279,6 +277,14 @@
        * Inizializza l'applicazione al caricamento della pagina
        */
       document.addEventListener('DOMContentLoaded', () => {
+        // Controllo aggiuntivo per assicurarsi che i valori non siano quelli di default
+        if (firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
+            const errorMsg = "ERRORE: La configurazione Firebase non è stata incollata. Apri il file .html (o index.html), scorri fino allo script e sostituisci i segnaposto 'INCOLLA_QUI...' con i tuoi veri valori.";
+            console.error(errorMsg);
+            document.body.innerHTML = `<div class="p-8 text-center text-red-600">${errorMsg}</div>`;
+            return; // Interrompe l'esecuzione
+        }
+          
         initializeFirebase();
         setupFormListeners();
         setupSummaryToggle();

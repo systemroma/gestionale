@@ -1,0 +1,20 @@
+// Queste regole sono FONDAMENTALI per la sicurezza
+// Impediscono ad altri utenti di vedere i tuoi dati e risolvono
+// l'errore "Impossibile caricare..."
+
+rules_version = '2';
+
+service cloud.firestore {
+match /databases/{database}/documents {
+
+// Permetti a un utente di leggere, scrivere e cancellare 
+// SOLO i documenti (incassi, uscite) NELLA SUA CARTELLA PERSONALE.
+// L'app crea i path come "users/{userId}/incassi/{docId}"
+// Questa regola controlla che {userId} sia lo stesso dell'utente loggato.
+match /users/{userId}/{collection}/{docId} {
+  allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+}
+
+
+}
+}

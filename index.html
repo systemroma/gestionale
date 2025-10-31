@@ -10,7 +10,7 @@
     
     <!-- Carica il font Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -69,97 +69,103 @@
             <!-- Sezione: Aggiungi Incasso -->
             <div>
               <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
-                Aggiungi Incasso
+                Aggiungi Movimento
               </h2>
-                <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
-                  Data Svolgimento
-                </label>
-                <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+
+              <!-- Messaggio di Errore -->
+              <div id="error-message" class="p-4 mb-4 text-sm text-red-800 bg-red-100 rounded-lg hidden" role="alert">
+                <!-- Il contenuto verrà aggiunto da JS -->
               </div>
-
-              <!-- Campo: Costo per Partecipante -->
-              <div>
-                <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
-                  Costo per Partecipante (€)
-                </label>
-                <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-              </div>
-
-              <!-- Campo: Numero Partecipanti -->
-              <div>
-                <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
-                  Numero Partecipanti
-                </label>
-                <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-              </div>
-
-              <!-- Campo: Costo Libero -->
-              <div>
-                <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
-                  Costi Extra / Libero (€)
-                </label>
-                <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" value="0" placeholder="Es. 25.50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-
-              <!-- Sezione Calcolo Totale -->
-              <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h3 class="text-lg font-semibold text-gray-800">Riepilogo Calcolo</h3>
-                <div class="text-sm text-gray-600 space-y-1 mt-2">
-                  <p>Costo Base: <span id="display-costo-base">0,00 €</span></p>
-                  <p>Costi Extra: <span id="display-costo-extra">0,00 €</span></p>
-                </div>
-                <hr class="my-2 border-blue-200" />
-                <p class="text-xl font-bold text-blue-600">
-                  Totale: <span id="display-totale">0,00 €</span>
-                </p>
-              </div>
-
-              <!-- Pulsante Submit -->
-              <button id="submit-button" type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
-                Salva Incasso
-              </button>
-            </form>
-            </div>
-
-            <hr class="my-8 border-gray-300" />
-
-            <!-- Sezione: Aggiungi Uscita -->
-            <div>
-              <h2 class="text-2xl font-semibold mb-5 text-gray-800 border-b pb-2">
-                Aggiungi Uscita
-              </h2>
               
-              <form id="uscita-form" class="space-y-4">
-                <!-- Campo: Descrizione -->
-                <div>
-                  <label for="uscita-descrizione" class="block text-sm font-medium text-gray-700 mb-1">
-                    Descrizione
-                  </label>
-                  <input type="text" id="uscita-descrizione" name="uscita-descrizione" placeholder="Es. Costo personale, affitto sala" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500" required />
-                </div>
+              <form id="incasso-form" class="space-y-4">
                 
-                <!-- Campo: Data Uscita -->
-                <div>
-                  <label for="uscita-data" class="block text-sm font-medium text-gray-700 mb-1">
-                    Data Uscita
-                  </label>
-                  <input type="date" id="uscita-data" name="uscita-data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500" required />
+                <div class="p-4 border border-blue-200 rounded-lg">
+                  <h3 class="text-lg font-semibold text-blue-700 mb-3">Incasso Corso</h3>
+                  <!-- Campo: Corso (Select) -->
+                  <div>
+                    <label for="corso" class="block text-sm font-medium text-gray-700 mb-1">
+                      Corso
+                    </label>
+                    <select id="corso" name="corso" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                      <option value="Corso Base di Programmazione">Corso Base di Programmazione</option>
+                      <option value="Corso Avanzato di Design">Corso Avanzato di Design</option>
+                      <option value="Workshop Marketing Digitale">Workshop Marketing Digitale</option>
+                      <option value="Seminario Public Speaking">Seminario Public Speaking</option>
+                      <option value="Altro">Altro</option>
+                    </select>
+                  </div>
+
+                  <!-- Campo: Data -->
+                  <div class="mt-4">
+                    <label for="data" class="block text-sm font-medium text-gray-700 mb-1">
+                      Data Svolgimento
+                    </label>
+                    <input type="date" id="data" name="data" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                  </div>
+
+                  <!-- Campo: Costo per Partecipante -->
+                  <div class="mt-4">
+                    <label for="costo-per-partecipante" class="block text-sm font-medium text-gray-700 mb-1">
+                      Costo per Partecipante (€)
+                    </label>
+                    <input type="number" id="costo-per-partecipante" name="costo-per-partecipante" min="0" step="0.01" placeholder="Es. 50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                  </div>
+
+                  <!-- Campo: Numero Partecipanti -->
+                  <div class="mt-4">
+                    <label for="num-partecipanti" class="block text-sm font-medium text-gray-700 mb-1">
+                      Numero Partecipanti
+                    </label>
+                    <input type="number" id="num-partecipanti" name="num-partecipanti" min="1" step="1" placeholder="Es. 10" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                  </div>
+
+                  <!-- Campo: Costo Libero -->
+                  <div class="mt-4">
+                    <label for="costo-libero" class="block text-sm font-medium text-gray-700 mb-1">
+                      Costi Extra / Libero (€)
+                    </label>
+                    <input type="number" id="costo-libero" name="costo-libero" min="0" step="0.01" value="0" placeholder="Es. 25.50" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+
+                  <!-- Sezione Calcolo Totale -->
+                  <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold text-gray-800">Riepilogo Incasso</h3>
+                    <div class="text-sm text-gray-600 space-y-1 mt-2">
+                      <p>Costo Base: <span id="display-costo-base">0,00 €</span></p>
+                      <p>Costi Extra: <span id="display-costo-extra">0,00 €</span></p>
+                    </div>
+                    <hr class="my-2 border-blue-200" />
+                    <p class="text-xl font-bold text-blue-600">
+                      Totale Incasso: <span id="display-totale">0,00 €</span>
+                    </p>
+                  </div>
                 </div>
 
-                <!-- Campo: Importo Uscita -->
-                <div>
-                  <label for="uscita-importo" class="block text-sm font-medium text-gray-700 mb-1">
-                    Importo (€)
-                  </label>
-                  <input type="number" id="uscita-importo" name="uscita-importo" min="0.01" step="0.01" placeholder="Es. 150" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500" required />
+                <hr class="my-6 border-gray-300" />
+
+                <!-- Sezione: Aggiungi Uscita (complementare) -->
+                <div class="p-4 border border-red-200 rounded-lg">
+                  <h3 class="text-lg font-semibold text-red-700 mb-3">Uscita (Opzionale)</h3>
+                  
+                  <!-- Campo: Importo Uscita (Costo Personale) -->
+                  <div>
+                    <label for="costo-personale" class="block text-sm font-medium text-gray-700 mb-1">
+                      Costo Personale (€)
+                    </label>
+                    <input type="number" id="costo-personale" name="costo-personale" min="0" step="0.01" value="0" placeholder="Es. 150" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500" />
+                    <p class="text-xs text-gray-500 mt-1">
+                      Verrà salvato come uscita separata usando la stessa data dell'incasso.
+                    </p>
+                  </div>
                 </div>
 
-                <!-- Pulsante Submit Uscita -->
-                <button id="submit-uscita-button" type="submit" class="w-full bg-red-600 text-white p-3 rounded-md font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
-                  Salva Uscita
+                <!-- Pulsante Submit -->
+                <button id="submit-button" type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed mt-6">
+                  Salva Incasso (e Uscita opz.)
                 </button>
               </form>
             </div>
+
           </div>
 
           <!-- Colonna 2: Lista degli incassi registrati -->
@@ -199,7 +205,6 @@
             <!-- Stato Vuoto -->
             <div id="empty-state-uscite" class="text-center p-10 bg-gray-50 rounded-lg hidden">
               <p class="text-gray-600">Nessuna uscita ancora registrata.</p>
-              <p class="text-sm text-gray-500 mt-1">Compila il modulo per iniziare.</p>
             </div>
             
             <!-- Lista Uscite -->
@@ -240,7 +245,7 @@
 
       // Variabili di stato globali
       let db, auth, userId, isAuthReady = false;
-      let collectionPath = '';
+      let collectionPathIncassi = '';
       let localIncassi = []; // Cache locale dei dati
       let collectionPathUscite = '';
       let localUscite = []; // Cache locale delle uscite
@@ -252,7 +257,7 @@
         console.error("Errore nell'impostare il log level:", e);
       }
 
-      // Riferimenti agli elementi DOM
+      // Riferimenti agli elementi DOM (Incassi)
       const form = document.getElementById('incasso-form');
       const incassiList = document.getElementById('incassi-list');
       const submitButton = document.getElementById('submit-button');
@@ -272,16 +277,13 @@
       const errorMessage = document.getElementById('error-message');
       const userIdDisplay = document.getElementById('user-id-display');
 
-      // Riferimenti DOM per Uscite e Riepilogo
-      const uscitaForm = document.getElementById('uscita-form');
-      const uscitaDescrizioneInput = document.getElementById('uscita-descrizione');
-      const uscitaDataInput = document.getElementById('uscita-data');
-      const uscitaImportoInput = document.getElementById('uscita-importo');
-      const submitUscitaButton = document.getElementById('submit-uscita-button');
+      // Riferimenti DOM (Uscite)
+      const costoPersonaleInput = document.getElementById('costo-personale');
       const usciteList = document.getElementById('uscite-list');
       const loadingStateUscite = document.getElementById('loading-state-uscite');
       const emptyStateUscite = document.getElementById('empty-state-uscite');
 
+      // Riferimenti DOM (Riepilogo)
       const displayTotaleIncassi = document.getElementById('display-totale-incassi');
       const displayTotaleUscite = document.getElementById('display-totale-uscite');
       const displaySaldoAttuale = document.getElementById('display-saldo-attuale');
@@ -403,33 +405,32 @@
         isAuthReady = true;
         
         // Imposta il path *privato* per i dati di questo utente
-        collectionPath = `/artifacts/${appId}/users/${userId}/${'incassi'}`;
+        collectionPathIncassi = `/artifacts/${appId}/users/${userId}/${'incassi'}`;
         collectionPathUscite = `/artifacts/${appId}/users/${userId}/${'uscite'}`;
         
         console.log(`Utente autenticato: ${userId}`);
-        console.log(`Path database incassi: ${collectionPath}`);
+        console.log(`Path database incassi: ${collectionPathIncassi}`);
         console.log(`Path database uscite: ${collectionPathUscite}`);
         
         // Aggiorna l'interfaccia
         userIdDisplay.innerHTML = `ID Utente: <span class="font-mono p-1 bg-blue-700 rounded">${userId}</span>`;
         
         // Avvia l'ascolto dei dati e valida i form
-        setupSnapshotListener();
+        setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
         validateForm();
-        validateUscitaForm();
       }
 
       /**
-       * 4. Si mette in ascolto dei cambiamenti sul database (real-time)
+       * 4a. Si mette in ascolto dei cambiamenti sul database (INCASSI)
        */
-      function setupSnapshotListener() {
-        if (!db || !collectionPath) return;
+      function setupSnapshotListenerIncassi() {
+        if (!db || !collectionPathIncassi) return;
 
-        const q = query(collection(db, collectionPath));
+        const q = query(collection(db, collectionPathIncassi));
 
         onSnapshot(q, (snapshot) => {
-          console.log("Dati ricevuti da Firestore.");
+          console.log("Dati (Incassi) ricevuti da Firestore.");
           localIncassi = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -443,8 +444,8 @@
           loadingState.classList.add('hidden');
 
         }, (error) => {
-          console.error("Errore in onSnapshot:", error);
-          showError("Impossibile caricare i dati in tempo reale.");
+          console.error("Errore in onSnapshot (Incassi):", error);
+          showError("Impossibile caricare gli incassi in tempo reale.");
           loadingState.classList.add('hidden');
         });
       }
@@ -479,122 +480,53 @@
       }
 
       /**
-       * 6. Gestisce il submit del form
+       * 5a. Aggiorna la lista HTML con i dati (INCASSI)
        */
-      async function handleSubmit(event) {
-        event.preventDefault(); // Impedisce il ricaricamento della pagina
-        if (!validateForm()) return; // Doppia validazione
+      function renderIncassiList() {
+        incassiList.innerHTML = ''; // Svuota la lista
 
-        // Disabilita il pulsante per evitare doppi invii
-        submitButton.disabled = true;
-        submitButton.textContent = "Salvataggio...";
-
-        // Raccoglie i dati dal form
-        const data = {
-          userId: userId,
-          corso: corsoInput.value,
-          data: dataInput.value,
-          costoPerPartecipante: costoInput.valueAsNumber || 0,
-          numPartecipanti: partecipantiInput.valueAsNumber || 0,
-          costoLibero: extraInput.valueAsNumber || 0,
-          totale: (costoInput.valueAsNumber || 0) * (partecipantiInput.valueAsNumber || 0) + (extraInput.valueAsNumber || 0)
-        };
-
-        try {
-          hideError();
-          // Aggiunge il documento a Firestore
-          await addDoc(collection(db, collectionPath), data);
-          
-          console.log("Incasso salvato con successo!");
-          
-          // Resetta il form (tranne data e corso)
-          costoInput.value = '';
-          partecipantiInput.value = '';
-          extraInput.value = '0';
-          
-          // Aggiorna i totali e ri-valida
-          updateTotalAndValidate();
-
-        } catch (e) {
-          console.error("Errore durante il salvataggio:", e);
-          showError("Impossibile salvare i dati.");
-        } finally {
-          // Riabilita il pulsante
-          submitButton.disabled = false;
-          submitButton.textContent = "Salva Incasso";
-          validateForm();
-        }
-      }
-
-      /**
-       * 7. Elimina un documento da Firestore
-       */
-      async function deleteIncasso(docId) {
-        if (!confirm("Sei sicuro di voler eliminare questo incasso?")) {
-          return;
+        if (localIncassi.length === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
         }
 
-        try {
-          hideError();
-          await deleteDoc(doc(db, collectionPath, docId));
-          console.log("Documento eliminato:", docId);
-        } catch (e) {
-          console.error("Errore durante l'eliminazione:", e);
-          showError("Impossibile eliminare l'incasso.");
-        }
-        // La lista si aggiornerà automaticamente grazie a onSnapshot
-      }
-
-      /**
-       * 8. Calcola il totale e valida il form
-       */
-      function updateTotalAndValidate() {
-        // Calcola
-        const costo = costoInput.valueAsNumber || 0;
-        const num = partecipantiInput.valueAsNumber || 0;
-        const extra = extraInput.valueAsNumber || 0;
-        
-        const costoBase = costo * num;
-        const totale = costoBase + extra;
-        
-        // Aggiorna display
-        displayCostoBase.textContent = formatCurrency(costoBase);
-        displayCostoExtra.textContent = formatCurrency(extra);
-        displayTotale.textContent = formatCurrency(totale);
-        
-        // Valida
-        validateForm();
-      }
-
-      /**
-       * 9. Valida il form e abilita/disabilita il pulsante
-       */
-      function validateForm() {
-        const costo = costoInput.valueAsNumber;
-        const num = partecipantiInput.valueAsNumber;
-
-        const isValid = 
-          isAuthReady &&
-          corsoInput.value &&
-          dataInput.value &&
-          costo !== null && costo >= 0 &&
-          num !== null && num > 0;
+        localIncassi.forEach(incasso => {
+          const li = document.createElement('li');
+          li.className = "bg-white border border-gray-200 p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between hover:shadow-md transition-shadow duration-200";
           
-        submitButton.disabled = !isValid;
-        
-        return isValid;
-      }
+          const costoLiberoHtml = incasso.costoLibero > 0
+            ? `<span> + ${formatCurrency(incasso.costoLibero)} extra</span>`
+            : '';
 
-      // --- Avvio dell'applicazione ---
-      
-      // Assicura che il DOM sia caricato prima di eseguire lo script
-      document.addEventListener('DOMContentLoaded', () => {
-        // Imposta la data di oggi come default
-        dataInput.value = getTodayDateString();
-        
-        // Aggiunge gli eventi per il calcolo live
-        [costoInput, partecipantiInput, extraInput].forEach(input => {
-          input.addEventListener('input', updateTotalAndValidate);
+          li.innerHTML = `
+            <div class="flex-1 mb-3 sm:mb-0">
+              <p class="text-lg font-semibold text-blue-700">${incasso.corso}</p>
+              <p class="text-sm text-gray-600">
+                Data: <span class="font-medium">${formatDate(incasso.data)}</span>
+              </p>
+              <p class="text-sm text-gray-600">
+                Dettagli: ${incasso.numPartecipanti} x ${formatCurrency(incasso.costoPerPartecipante)}
+                ${costoLiberoHtml}
+              </p>
+              <p class="text-lg font-bold text-gray-800 mt-1">
+                Totale: ${formatCurrency(incasso.totale)}
+              </p>
+            </div>
+            
+            <button class="delete-incasso-btn flex-shrink-0 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition duration-200 shadow-sm self-end sm:self-center" aria-label="Elimina incasso">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          `;
+
+          // Aggiunge l'evento al pulsante di eliminazione
+          li.querySelector('.delete-incasso-btn').addEventListener('click', () => {
+            deleteIncasso(incasso.id);
+          });
+
+          incassiList.appendChild(li);
         });
       }
 
@@ -642,3 +574,198 @@
       }
 
       /**
+       * 6. Gestisce il submit del form (INCASSO + USCITA OPZIONALE)
+       */
+      async function handleSubmit(event) {
+        event.preventDefault(); // Impedisce il ricaricamento della pagina
+        if (!validateForm()) return; // Doppia validazione
+
+        // Disabilita il pulsante per evitare doppi invii
+        submitButton.disabled = true;
+        submitButton.textContent = "Salvataggio...";
+
+        // Raccoglie i dati
+        const dataIncasso = {
+          userId: userId,
+          corso: corsoInput.value,
+          data: dataInput.value,
+          costoPerPartecipante: costoInput.valueAsNumber || 0,
+          numPartecipanti: partecipantiInput.valueAsNumber || 0,
+          costoLibero: extraInput.valueAsNumber || 0,
+          totale: (costoInput.valueAsNumber || 0) * (partecipantiInput.valueAsNumber || 0) + (extraInput.valueAsNumber || 0)
+        };
+        
+        const costoPersonale = costoPersonaleInput.valueAsNumber || 0;
+        
+        try {
+          hideError();
+          
+          // 1. Salva l'incasso
+          await addDoc(collection(db, collectionPathIncassi), dataIncasso);
+          console.log("Incasso salvato con successo!");
+          
+          // 2. Salva l'uscita (se presente)
+          if (costoPersonale > 0) {
+            const dataUscita = {
+              userId: userId,
+              descrizione: "Costo Personale", // Descrizione fissa
+              data: dataInput.value, // Stessa data dell'incasso
+              importo: costoPersonale,
+            };
+            await addDoc(collection(db, collectionPathUscite), dataUscita);
+            console.log("Uscita 'Costo Personale' salvata con successo!");
+          }
+          
+          // Resetta il form (tranne data e corso)
+          costoInput.value = '';
+          partecipantiInput.value = '';
+          extraInput.value = '0';
+          costoPersonaleInput.value = '0';
+          
+          // Aggiorna i totali e ri-valida
+          updateTotalAndValidate();
+
+        } catch (e) {
+          console.error("Errore durante il salvataggio:", e);
+          showError("Impossibile salvare i dati.");
+        } finally {
+          // Riabilita il pulsante
+          submitButton.disabled = false;
+          submitButton.textContent = "Salva Incasso (e Uscita opz.)";
+          validateForm();
+        }
+      }
+
+      /**
+       * 7a. Elimina un documento da Firestore (INCASSO)
+       */
+      async function deleteIncasso(docId) {
+        // Uso un prompt semplice, dato che confirm() può essere bloccato
+        const sic = prompt("Scrivi 'SI' per confermare l'eliminazione di questo incasso:");
+        if (sic !== 'SI') return;
+
+        try {
+          hideError();
+          await deleteDoc(doc(db, collectionPathIncassi, docId));
+          console.log("Documento (Incasso) eliminato:", docId);
+        } catch (e) {
+          console.error("Errore durante l'eliminazione (Incasso):", e);
+          showError("Impossibile eliminare l'incasso.");
+        }
+        // La lista si aggiornerà automaticamente grazie a onSnapshot
+      }
+      
+      /**
+       * 7b. Elimina un documento da Firestore (USCITA)
+       */
+      async function deleteUscita(docId) {
+        const sic = prompt("Scrivi 'SI' per confermare l'eliminazione di questa uscita:");
+        if (sic !== 'SI') return;
+
+        try {
+          hideError();
+          await deleteDoc(doc(db, collectionPathUscite, docId));
+          console.log("Documento (Uscita) eliminato:", docId);
+        } catch (e) {
+          console.error("Errore durante l'eliminazione (Uscita):", e);
+          showError("Impossibile eliminare l'uscita.");
+        }
+        // La lista si aggiornerà automaticamente grazie a onSnapshot
+      }
+
+      /**
+       * 8. Calcola il totale e valida il form (solo per incasso)
+       */
+      function updateTotalAndValidate() {
+        // Calcola
+        const costo = costoInput.valueAsNumber || 0;
+        const num = partecipantiInput.valueAsNumber || 0;
+        const extra = extraInput.valueAsNumber || 0;
+        
+        const costoBase = costo * num;
+        const totale = costoBase + extra;
+        
+        // Aggiorna display
+        displayCostoBase.textContent = formatCurrency(costoBase);
+        displayCostoExtra.textContent = formatCurrency(extra);
+        displayTotale.textContent = formatCurrency(totale);
+        
+        // Valida
+        validateForm();
+      }
+
+      /**
+       * 9. Valida il form e abilita/disabilita il pulsante
+       */
+      function validateForm() {
+        const costo = costoInput.valueAsNumber;
+        const num = partecipantiInput.valueAsNumber;
+
+        // La validazione si basa solo sui campi incasso
+        const isValid = 
+          isAuthReady &&
+          corsoInput.value &&
+          dataInput.value &&
+          costo !== null && costo >= 0 &&
+          num !== null && num > 0;
+          
+        submitButton.disabled = !isValid;
+        
+        return isValid;
+      }
+      
+      /**
+       * 10. Aggiorna il riepilogo finanziario
+       */
+      function updateSummary() {
+        const totIncassi = localIncassi.reduce((acc, curr) => acc + curr.totale, 0);
+        const totUscite = localUscite.reduce((acc, curr) => acc + curr.importo, 0);
+        const saldo = totIncassi - totUscite;
+
+        displayTotaleIncassi.textContent = formatCurrency(totIncassi);
+        displayTotaleUscite.textContent = formatCurrency(totUscite);
+        displaySaldoAttuale.textContent = formatCurrency(saldo);
+
+        // Cambia colore del saldo se negativo
+        if (saldo < 0) {
+          displaySaldoAttuale.classList.remove('text-blue-700', 'text-green-600');
+          displaySaldoAttuale.classList.add('text-red-600');
+        } else if (saldo > 0) {
+          displaySaldoAttuale.classList.remove('text-blue-700', 'text-red-600');
+          displaySaldoAttuale.classList.add('text-green-600');
+        } else {
+          displaySaldoAttuale.classList.remove('text-green-600', 'text-red-600');
+          displaySaldoAttuale.classList.add('text-blue-700');
+        }
+      }
+
+      // --- Avvio dell'applicazione ---
+      
+      // Assicura che il DOM sia caricato prima di eseguire lo script
+      document.addEventListener('DOMContentLoaded', () => {
+        // Imposta la data di oggi come default
+        dataInput.value = getTodayDateString();
+        
+        // Aggiunge gli eventi per il calcolo live (Incassi)
+        [costoInput, partecipantiInput, extraInput].forEach(input => {
+          input.addEventListener('input', updateTotalAndValidate);
+        });
+        
+        // Aggiunge gli eventi per la validazione live (Incassi)
+        [corsoInput, dataInput, costoInput, partecipantiInput].forEach(input => {
+          input.addEventListener('input', validateForm);
+        });
+
+        // Collega il submit del form
+        form.addEventListener('submit', handleSubmit);
+
+        // Avvia la validazione iniziale
+        updateTotalAndValidate();
+        
+        // Avvia Firebase
+        initializeFirebase();
+      });
+
+    </script>
+</body>
+</html>

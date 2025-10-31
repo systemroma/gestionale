@@ -210,11 +210,17 @@
 
         <!-- Riepilogo Finanziario a Scomparsa (SPOSTATO QUI IN FONDO) -->
         <div class="bg-white p-4 rounded-lg shadow-md mt-8">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-semibold text-gray-800">Riepilogo Finanziario</h2>
-                <button id="toggle-summary-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    Mostra
-                </button>
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Riepilogo Finanziario</h2>
+                <div class="flex space-x-2">
+                    <!-- BOTTONE ESPORTA -->
+                    <button id="export-json-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">
+                        Esporta JSON
+                    </button>
+                    <button id="toggle-summary-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                        Mostra
+                    </button>
+                </div>
             </div>
             
             <!-- Contenuto del Riepilogo (Nascosto di default) -->
@@ -236,7 +242,7 @@
 
     </div>
 
-    <!-- Modale di Conferma Cancellazione -->
+    <!-- Modale di Conferma Cancellazione (Singolo) -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
             <h3 class="text-lg font-semibold mb-4">Sei sicuro?</h3>
@@ -247,6 +253,22 @@
                 </button>
                 <button id="custom-confirm-yes" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
                     Sì, elimina
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUOVO: Modale di Conferma CANCELLA TUTTO (dopo esportazione) -->
+    <div id="delete-all-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 class="text-lg font-semibold mb-4 text-red-700">Azione Irreversibile</h3>
+            <p class="text-gray-700 mb-6" id="delete-all-text">Esportazione completata. Vuoi cancellare tutti i dati per l'anno [ANNO]?</p>
+            <div class="flex justify-end space-x-4">
+                <button id="delete-all-no" class="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition">
+                    No, tieni i dati
+                </button>
+                <button id="delete-all-yes" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                    Sì, cancella tutto
                 </button>
             </div>
         </div>
@@ -272,12 +294,14 @@
         onSnapshot,
         addDoc,
         deleteDoc,
-        query
+        query,
+        writeBatch // NUOVO: Importato per la cancellazione di massa
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
       // --- Variabili Globali ---
       
       // La variabile `firebaseConfig` ora è caricata da `firebase-config.js`
+      // @ts-ignore
       if (typeof firebaseConfig === 'undefined' || firebaseConfig.projectId === "INCOLLA_QUI_projectId") {
         const errorMsg = "ERRORE: `firebaseConfig` non trovato o non valido. Assicurati che `firebase-config.js` sia presente, salvato, e contenga la tua vera configurazione Firebase.";
         console.error(errorMsg);
@@ -285,11 +309,12 @@
         throw new Error(errorMsg);
       }
       
+      // @ts-ignore
       const appId = firebaseConfig.projectId || 'default-app-id';
       
       // --- Variabili di Stato ---
       let db, auth, userId, isAuthReady = false;
-      let selectedYear = new Date().getFullYear(); // Tiene traccia dell'anno
+      let selectedYear = new Date().getFullYear();
       let pathIncassi = ''; 
       let localIncassi = []; 
       let pathUscite = ''; 
@@ -331,16 +356,23 @@
       const totalSaldoEl = document.getElementById('total-saldo');
       const toggleMovimentiBtn = document.getElementById('toggle-movimenti-btn');
       const movimentiContent = document.getElementById('movimenti-content');
+      const exportJsonBtn = document.getElementById('export-json-btn');
       
       // --- Elementi DOM (Errori App) ---
       const errorMessage = document.getElementById('error-message');
       const errorText = document.getElementById('error-text');
 
-      // --- Elementi DOM (Modale Conferma) ---
+      // --- Elementi DOM (Modale Conferma Singolo) ---
       const customConfirmModal = document.getElementById('custom-confirm-modal');
       const customConfirmYes = document.getElementById('custom-confirm-yes');
       const customConfirmNo = document.getElementById('custom-confirm-no');
       const customConfirmText = document.getElementById('custom-confirm-text');
+
+      // --- NUOVI Elementi DOM (Modale Cancella Tutto) ---
+      const deleteAllModal = document.getElementById('delete-all-modal');
+      const deleteAllYes = document.getElementById('delete-all-yes');
+      const deleteAllNo = document.getElementById('delete-all-no');
+      const deleteAllText = document.getElementById('delete-all-text');
 
       /**
        * Inizializza l'applicazione al caricamento della pagina
@@ -350,9 +382,11 @@
         setupFormListeners(); 
         setupAuthForms(); 
         setupToggleListeners();
-        setupModalListeners();
+        setupModalListeners(); // MODIFICATO: ora imposta entrambi i modali
         setupYearSelector();
+        exportJsonBtn.addEventListener('click', exportDataToJSON);
         
+        // @ts-ignore
         dataInput.valueAsDate = new Date();
       });
 
@@ -362,6 +396,7 @@
       function initializeFirebase() {
         setLogLevel('Debug');
         try {
+          // @ts-ignore
           const app = initializeApp(firebaseConfig);
           db = getFirestore(app); 
           auth = getAuth(app);
@@ -395,13 +430,12 @@
             isAuthReady = false;
             appContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
-            
-            // Pulisci i dati e resetta l'anno
             localIncassi = [];
             localUscite = [];
             renderMovimentiList();
             updateSummary();
-            selectedYear = new Date().getFullYear(); // Reset all'anno corrente
+            selectedYear = new Date().getFullYear();
+            // @ts-ignore
             yearSelector.value = selectedYear;
             authStatus.textContent = "Disconnesso.";
           }
@@ -422,7 +456,9 @@
       async function handleLogin(e) {
         e.preventDefault();
         hideAuthError();
+        // @ts-ignore
         const email = e.target.email.value;
+        // @ts-ignore
         const password = e.target.password.value;
 
         try {
@@ -450,12 +486,12 @@
         userId = user.uid;
         isAuthReady = true;
         
-        updateDatabasePaths(); // Imposta i path del DB in base all'anno selezionato
+        updateDatabasePaths(); 
         
         authStatus.textContent = `Connesso come: ${user.email}`;
+        // @ts-ignore
         submitBtn.disabled = false;
         
-        // Avvia i listener per i dati
         setupSnapshotListenerIncassi();
         setupSnapshotListenerUscite();
       }
@@ -528,15 +564,23 @@
       }
 
       /**
-       * 6c. Imposta i listener per il modale di conferma
+       * 6c. Imposta i listener per i modali di conferma
        */
       function setupModalListeners() {
+          // Modale per cancellazione singola
           customConfirmNo.addEventListener('click', hideCustomConfirm);
           customConfirmYes.addEventListener('click', () => {
              if (deleteCallback) {
                  deleteCallback();
              }
              hideCustomConfirm();
+          });
+
+          // NUOVO: Modale per cancellazione di massa
+          deleteAllNo.addEventListener('click', hideDeleteAllConfirm);
+          deleteAllYes.addEventListener('click', async () => {
+              hideDeleteAllConfirm();
+              await handleDeleteAllData();
           });
       }
 
@@ -546,7 +590,6 @@
       function setupYearSelector() {
           const currentYear = new Date().getFullYear();
           const years = [];
-          // Popola 5 anni fa e 1 anno nel futuro
           for (let i = currentYear + 1; i > currentYear - 5; i--) {
               years.push(i);
           }
@@ -555,7 +598,8 @@
               `<option value="${year}">${year}</option>`
           ).join('');
 
-          yearSelector.value = selectedYear; // Imposta l'anno corrente
+          // @ts-ignore
+          yearSelector.value = selectedYear;
           
           yearSelector.addEventListener('change', handleYearChange);
       }
@@ -564,19 +608,17 @@
        * 6e. Gestisce il cambio dell'anno selezionato
        */
       function handleYearChange(e) {
+          // @ts-ignore
           selectedYear = parseInt(e.target.value, 10);
           console.log(`Anno cambiato in: ${selectedYear}`);
           
-          // Stacca i vecchi listener
           unsubscribeIncassi();
           unsubscribeUscite();
           
-          // Pulisci l'interfaccia e mostra il caricamento
           movimentiList.innerHTML = '';
           loadingState.classList.remove('hidden');
           emptyState.classList.add('hidden');
           
-          // Aggiorna i path e riavvia i listener
           updateDatabasePaths();
           setupSnapshotListenerIncassi();
           setupSnapshotListenerUscite();
@@ -584,12 +626,9 @@
 
       /**
        * 6f. Funzione helper per aggiornare i path del DB
-       *
-       * QUESTA È LA CORREZIONE IMPORTANTE
        */
       function updateDatabasePaths() {
           if (!userId) return;
-          // Struttura CORRETTA (5 segmenti): users/{UID}/data/{ANNO}/incassi
           pathIncassi = `users/${userId}/data/${selectedYear}/incassi`;
           pathUscite = `users/${userId}/data/${selectedYear}/uscite`;
           console.log(`Path DB aggiornati per l'anno ${selectedYear}`);
@@ -606,54 +645,63 @@
           return;
         }
 
+        // @ts-ignore
         submitBtn.disabled = true;
         submitBtn.textContent = "Salvataggio in corso...";
 
         const form = event.target;
         
-        // Valida la data: deve corrispondere all'anno selezionato!
+        // @ts-ignore
         const dataSelezionata = new Date(form.data.value);
         const annoData = dataSelezionata.getFullYear();
         
         if(annoData !== selectedYear) {
             showError(`La data del movimento (${annoData}) non corrisponde all'anno selezionato (${selectedYear}). Cambia l'anno o la data.`);
+            // @ts-ignore
             submitBtn.disabled = false;
             submitBtn.textContent = "Salva Movimento";
             return;
         }
 
         const dataIncasso = {
+          // @ts-ignore
           corso: form.corso.value,
+          // @ts-ignore
           data: form.data.value,
+          // @ts-ignore
           costoPerPartecipante: parseFloat(form['costo-per-partecipante'].value),
+          // @ts-ignore
           numPartecipanti: parseInt(form['num-partecipanti'].value),
+          // @ts-ignore
           costoLibero: parseFloat(form['costo-libero'].value) || 0,
           userId: userId,
           totale: 0 
         };
         dataIncasso.totale = (dataIncasso.costoPerPartecipante * dataIncasso.numPartecipanti) + dataIncasso.costoLibero;
         
+        // @ts-ignore
         const costoPersonale = parseFloat(form['costo-personale'].value) || 0;
 
         try {
           hideError();
-          // Salva nel path corretto (es. /users/UID/data/2025/incassi)
           await addDoc(collection(db, pathIncassi), dataIncasso);
           console.log("Incasso salvato con successo!");
           
           if (costoPersonale > 0) {
             const dataUscita = {
               descrizione: "Costo Personale",
+              // @ts-ignore
               data: dataInput.value, 
               importo: costoPersonale,
               userId: userId 
             };
-            // Salva nel path corretto (es. /users/UID/data/2025/uscite)
             await addDoc(collection(db, pathUscite), dataUscita);
             console.log("Uscita 'Costo Personale' salvata con successo!");
           }
           
+          // @ts-ignore
           form.reset();
+          // @ts-ignore
           dataInput.valueAsDate = new Date(); 
           updateCalcoloTotale(); 
 
@@ -661,13 +709,14 @@
           console.error("Errore nel salvataggio:", e);
           showError(`Errore nel salvataggio: ${e.message}`);
         } finally {
+          // @ts-ignore
           submitBtn.disabled = false;
           submitBtn.textContent = "Salva Movimento";
         }
       }
 
       /**
-       * 7. Renderizza l'intera lista dei movimenti (incassi + uscite)
+       * 7b. Renderizza l'intera lista dei movimenti
        */
       function renderMovimentiList() {
         movimentiList.innerHTML = ''; 
@@ -692,9 +741,11 @@
             
             if (movimento.type === 'incasso') {
                 li.innerHTML = createIncassoHTML(movimento);
+                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteIncasso(movimento.id));
             } else {
                 li.innerHTML = createUscitaHTML(movimento);
+                // @ts-ignore
                 li.querySelector('button').addEventListener('click', () => deleteUscita(movimento.id));
             }
             movimentiList.appendChild(li);
@@ -703,7 +754,7 @@
       }
       
       /**
-       * 7a. Avvia l'eliminazione di un INCASSO
+       * 7c. Avvia l'eliminazione di un INCASSO
        */
       function deleteIncasso(docId) {
         showCustomConfirm("Sei sicuro di voler eliminare questo incasso?", async () => {
@@ -720,7 +771,7 @@
       }
       
       /**
-       * 7b. Avvia l'eliminazione di una USCITA
+       * 7d. Avvia l'eliminazione di una USCITA
        */
       function deleteUscita(docId) {
         showCustomConfirm("Sei sicuro di voler eliminare questa uscita?", async () => {
@@ -753,24 +804,117 @@
        * 9. Aggiorna il calcolo del totale nel form
        */
       function updateCalcoloTotale() {
+        // @ts-ignore
         const costo = parseFloat(costoInput.value) || 0;
+        // @ts-ignore
         const num = parseInt(numInput.value) || 0;
+        // @ts-ignore
         const libero = parseFloat(liberoInput.value) || 0;
         const totale = (costo * num) + libero;
         calcoloTotale.textContent = formatCurrency(totale);
       }
 
-      // --- Funzioni di Utility (Modale) ---
+      // --- Funzione Esportazione (MODIFICATA) ---
+
+      /**
+       * 10. Esporta i dati correnti (incassi e uscite) in un file JSON
+       */
+      function exportDataToJSON() {
+        if (localIncassi.length === 0 && localUscite.length === 0) {
+            showError("Nessun dato da esportare per l'anno selezionato.");
+            return;
+        }
+        hideError();
+
+        const dataToExport = {
+            anno: selectedYear,
+            incassi: localIncassi,
+            uscite: localUscite
+        };
+
+        const jsonString = JSON.stringify(dataToExport, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gestionale_dati_${selectedYear}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // --- NUOVA PARTE ---
+        // Dopo aver scaricato, chiedi se cancellare
+        showDeleteAllConfirm();
+      }
+
+      // --- NUOVA Funzione (Cancella Tutto) ---
+      /**
+       * 11. Gestisce la cancellazione di massa di tutti i dati per l'anno corrente
+       */
+      async function handleDeleteAllData() {
+        console.log(`Avvio cancellazione di massa per l'anno ${selectedYear}...`);
+        
+        // Disabilita i pulsanti per evitare problemi
+        // @ts-ignore
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Cancellazione in corso...";
+        exportJsonBtn.disabled = true;
+        
+        try {
+            // È più sicuro ed efficiente usare un "Batch Write"
+            const batch = writeBatch(db);
+
+            // Aggiungi tutte le cancellazioni degli incassi al batch
+            localIncassi.forEach(incasso => {
+                const docRef = doc(db, pathIncassi, incasso.id);
+                batch.delete(docRef);
+            });
+
+            // Aggiungi tutte le cancellazioni delle uscite al batch
+            localUscite.forEach(uscita => {
+                const docRef = doc(db, pathUscite, uscita.id);
+                batch.delete(docRef);
+            });
+
+            // Esegui tutte le operazioni in una sola volta
+            await batch.commit();
+
+            console.log("Cancellazione di massa completata.");
+            // I listener onSnapshot aggiorneranno automaticamente l'interfaccia
+            
+        } catch (e) {
+            console.error("Errore durante la cancellazione di massa:", e);
+            showError(`Errore durante la cancellazione: ${e.message}`);
+        } finally {
+            // Riabilita i pulsanti
+            // @ts-ignore
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Salva Movimento";
+            // @ts-ignore
+            exportJsonBtn.disabled = false;
+        }
+      }
+
+      // --- Funzioni di Utility (Modali) ---
 
       function showCustomConfirm(message, callback) {
           customConfirmText.textContent = message;
           deleteCallback = callback;
           customConfirmModal.classList.remove('hidden');
       }
-      
       function hideCustomConfirm() {
           customConfirmModal.classList.add('hidden');
           deleteCallback = null;
+      }
+
+      // NUOVE Funzioni di Utility (Modale Cancella Tutto)
+      function showDeleteAllConfirm() {
+          deleteAllText.textContent = `Esportazione completata. Vuoi cancellare tutti i ${localIncassi.length} incassi e ${localUscite.length} uscite per l'anno ${selectedYear}? L'azione è irreversibile.`;
+          deleteAllModal.classList.remove('hidden');
+      }
+      function hideDeleteAllConfirm() {
+          deleteAllModal.classList.add('hidden');
       }
 
       // --- Funzioni di Utility (Errori) ---

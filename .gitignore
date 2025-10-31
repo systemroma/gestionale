@@ -1,6 +1,7 @@
 Ignora il file di configurazione che contiene le chiavi segrete
 
 firebase-config.js
+index.html
 
 Ignora altre cartelle comuni di sviluppo
 
